@@ -2,12 +2,12 @@
 data_processing.py
 cleans raw url dataset, extracts features and saves processed csv files
 """
-import pandas as pd
+#import pandas as pd
 import ipaddress
 
 from urllib.parse import urlparse
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
+#from sklearn.model_selection import train_test_split
+#from sklearn.preprocessing import StandardScaler
 
 
 # fixed feature schema
@@ -169,168 +169,168 @@ def extract_features(url, has_https):
     }
 
 
-if __name__ == "__main__":
-    # load database
-    df = pd.read_csv("malicious_phish.csv")
+# if __name__ == "__main__":
+#     # load database
+#     df = pd.read_csv("malicious_phish.csv")
 
-    print("Original dataset:")
-    print(df.head())
-    print("\nColumns:")
-    print(df.columns)
-
-
-    df = df.rename(columns={
-        "type": "label"
-    })
-
-    # removes missing data
-    df = df.dropna(subset=["url", "label"])
+#     print("Original dataset:")
+#     print(df.head())
+#     print("\nColumns:")
+#     print(df.columns)
 
 
-    # url formatting
-    df["url"] = (
-        df["url"]
-        .astype(str)
-        .str.strip()
-        .str.lower()
-    )
+#     df = df.rename(columns={
+#         "type": "label"
+#     })
+
+#     # removes missing data
+#     df = df.dropna(subset=["url", "label"])
 
 
-    df["has_https"] = df["url"].apply(
-        check_https
-    )
+#     # url formatting
+#     df["url"] = (
+#         df["url"]
+#         .astype(str)
+#         .str.strip()
+#         .str.lower()
+#     )
 
 
-    df["url"] = df["url"].apply(
-        clean_url
-    )
+#     df["has_https"] = df["url"].apply(
+#         check_https
+#     )
 
 
-    # removes duplicates
-    df = df.drop_duplicates(subset=["url"])
-
-    df = df.reset_index(drop=True)
-
-
-    # standardise labels
-    label_mapping = {
-        "benign": "legitimate",
-        "phishing": "malicious",
-        "defacement": "malicious",
-        "malware": "malicious"
-    }
+#     df["url"] = df["url"].apply(
+#         clean_url
+#     )
 
 
-    df["label"] = (
-        df["label"]
-        .astype(str)
-        .str.strip()
-        .str.lower()
-    )
+#     # removes duplicates
+#     df = df.drop_duplicates(subset=["url"])
 
-    df["label"] = df["label"].map(label_mapping)
+#     df = df.reset_index(drop=True)
 
 
-    # Remove any rows with labels that were not recognised
-    df = df.dropna(subset=["label"])
+#     # standardise labels
+#     label_mapping = {
+#         "benign": "legitimate",
+#         "phishing": "malicious",
+#         "defacement": "malicious",
+#         "malware": "malicious"
+#     }
 
 
-    # Convert labels to numerical values
-    df["label"] = df["label"].map({
-        "legitimate": 0,
-        "malicious": 1
-    })
+#     df["label"] = (
+#         df["label"]
+#         .astype(str)
+#         .str.strip()
+#         .str.lower()
+#     )
+
+#     df["label"] = df["label"].map(label_mapping)
 
 
-    # applying feature transformation
-    feature_data = []
-
-    for url, has_https in zip(
-        df["url"],
-        df["has_https"]
-    ):
-
-        feature_data.append(
-            extract_features(
-                url,
-                has_https
-            )
-        )
+#     # Remove any rows with labels that were not recognised
+#     df = df.dropna(subset=["label"])
 
 
-    features_df = pd.DataFrame(
-        feature_data
-    )
+#     # Convert labels to numerical values
+#     df["label"] = df["label"].map({
+#         "legitimate": 0,
+#         "malicious": 1
+#     })
 
 
-    # enforce fixed feature schema
-    features_df = features_df[
-        FEATURE_COLUMNS
-    ]
+#     # applying feature transformation
+#     feature_data = []
 
-    # add label
-    features_df["label"] = df["label"].values
+#     for url, has_https in zip(
+#         df["url"],
+#         df["has_https"]
+#     ):
 
-
-    # separate features and label
-    X = features_df.drop(columns=["label"])
-    y = features_df["label"]
-
-    # train/test split
-    X_train, X_test, y_train, y_test = train_test_split(
-        X,
-        y,
-        test_size=0.2,
-        random_state=42,
-        stratify=y
-    )
+#         feature_data.append(
+#             extract_features(
+#                 url,
+#                 has_https
+#             )
+#         )
 
 
-    # normalise features
-    scaler = StandardScaler()
-
-    X_train = scaler.fit_transform(X_train)
-
-    X_test = scaler.transform(X_test)
+#     features_df = pd.DataFrame(
+#         feature_data
+#     )
 
 
-    print("\nDataset size:")
-    print(f"Total URLs: {len(df)}")
+#     # enforce fixed feature schema
+#     features_df = features_df[
+#         FEATURE_COLUMNS
+#     ]
 
-    print("\nClass distribution:")
-    print(
-        df["label"]
-        .map({
-            0: "legitimate",
-            1: "malicious"
-        })
-        .value_counts()
-    )
-
-    print("\nFixed feature schema:")
-
-    for i, feature in enumerate(
-        FEATURE_COLUMNS,
-        start=1
-    ):
-
-        print(
-            f"{i}. {feature}"
-        )
-
-    print("\nTraining data:")
-    print(f"X_train: {X_train.shape}")
-    print(f"y_train: {y_train.shape}")
-
-    print("\nTesting data:")
-    print(f"X_test: {X_test.shape}")
-
-    print("\nFeatures:")
-    print(list(X.columns))
+#     # add label
+#     features_df["label"] = df["label"].values
 
 
-    # Cleaned raw URL dataset
-    df.to_csv("processed_dataset.csv", index=False)
+#     # separate features and label
+#     X = features_df.drop(columns=["label"])
+#     y = features_df["label"]
 
-    # Feature dataset for machine learning
-    features_df.to_csv("processed_features.csv", index=False)
+#     # train/test split
+#     X_train, X_test, y_train, y_test = train_test_split(
+#         X,
+#         y,
+#         test_size=0.2,
+#         random_state=42,
+#         stratify=y
+#     )
+
+
+#     # normalise features
+#     scaler = StandardScaler()
+
+#     X_train = scaler.fit_transform(X_train)
+
+#     X_test = scaler.transform(X_test)
+
+
+#     print("\nDataset size:")
+#     print(f"Total URLs: {len(df)}")
+
+#     print("\nClass distribution:")
+#     print(
+#         df["label"]
+#         .map({
+#             0: "legitimate",
+#             1: "malicious"
+#         })
+#         .value_counts()
+#     )
+
+#     print("\nFixed feature schema:")
+
+#     for i, feature in enumerate(
+#         FEATURE_COLUMNS,
+#         start=1
+#     ):
+
+#         print(
+#             f"{i}. {feature}"
+#         )
+
+#     print("\nTraining data:")
+#     print(f"X_train: {X_train.shape}")
+#     print(f"y_train: {y_train.shape}")
+
+#     print("\nTesting data:")
+#     print(f"X_test: {X_test.shape}")
+
+#     print("\nFeatures:")
+#     print(list(X.columns))
+
+
+#     # Cleaned raw URL dataset
+#     df.to_csv("processed_dataset.csv", index=False)
+
+#     # Feature dataset for machine learning
+#     features_df.to_csv("processed_features.csv", index=False)

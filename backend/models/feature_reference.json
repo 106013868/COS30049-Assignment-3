@@ -1,0 +1,24 @@
+{
+  "legitimate": {
+    "url_length": 56.52,
+    "domain_length": 16.61,
+    "path_length": 32.05,
+    "digit_count": 5.55,
+    "special_character_count": 7.93,
+    "dot_count": 1.89,
+    "subdomain_count": 0.38,
+    "has_ip": 0.0,
+    "suspicious_keyword_count": 0.07
+  },
+  "phishing": {
+    "url_length": 57.2,
+    "domain_length": 16.72,
+    "path_length": 20.67,
+    "digit_count": 4.9,
+    "special_character_count": 8.04,
+    "dot_count": 2.22,
+    "subdomain_count": 0.48,
+    "has_ip": 0.06,
+    "suspicious_keyword_count": 0.06
+  }
+}
