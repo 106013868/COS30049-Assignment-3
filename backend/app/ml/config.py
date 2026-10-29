@@ -35,3 +35,16 @@ CLUSTER_COLUMN = "cluster"
 PREDICTION_COLUMN = "prediction"
 PROBABILITY_COLUMN = "probability"
 TRUST_COLUMN = "trust_score"
+
+# words often used in phishing urls (shared by feature extraction and signals)
+SUSPICIOUS_KEYWORDS = [
+    "login",
+    "signin",
+    "verify",
+    "verification",
+    "account",
+    "secure",
+    "update",
+    "password",
+    "bank"
+]

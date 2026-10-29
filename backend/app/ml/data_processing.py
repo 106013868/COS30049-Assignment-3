@@ -6,6 +6,7 @@ cleans raw url dataset, extracts features and saves processed csv files
 import ipaddress
 
 from urllib.parse import urlparse
+from .config import SUSPICIOUS_KEYWORDS
 #from sklearn.model_selection import train_test_split
 #from sklearn.preprocessing import StandardScaler
 
@@ -144,22 +145,22 @@ def extract_features(url, has_https):
     except ValueError:
         features["has_ip"] = 0
 
-    # suspicious keyword
-    suspicious_keywords = [
-        "login",
-        "signin",
-        "verify",
-        "verification",
-        "account",
-        "secure",
-        "update",
-        "password",
-        "bank"
-    ]
+    # # suspicious keyword #imported from config.py
+    # suspicious_keywords = [
+    #     "login",
+    #     "signin",
+    #     "verify",
+    #     "verification",
+    #     "account",
+    #     "secure",
+    #     "update",
+    #     "password",
+    #     "bank"
+    # ]
 
     features["suspicious_keyword_count"] = sum(
         keyword in original_url
-        for keyword in suspicious_keywords
+        for keyword in SUSPICIOUS_KEYWORDS
     )
 
 
