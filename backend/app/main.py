@@ -4,7 +4,9 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 
+from app.config import settings
 from app.ml import config as cfg
 from app.ml.inference import load_model, predict_url
 from app.schemas import PredictRequest, PredictResponse
@@ -34,6 +36,15 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="PhishLens API", lifespan=lifespan)
 
+# Browsers may only read API responses from our own front end
+# Least privilege
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[settings.frontend_origin],
+    allow_methods=["GET", "POST"],             # the only methods the API uses
+    allow_headers=["Content-Type"],            # the only header the front end sends
+    allow_credentials=False,                   # no cookies or logins in this app
+)
 
 @app.get("/api/health")
 def health(request: Request):
