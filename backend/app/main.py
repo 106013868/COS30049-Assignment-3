@@ -46,6 +46,24 @@ app.add_middleware(
     allow_credentials=False,                   # no cookies or logins in this app
 )
 
+# Security headers added to every response
+SECURITY_HEADERS = {
+    "X-Content-Type-Options": "nosniff",   # browser must trust our Content-Type, never guess
+    "X-Frame-Options": "DENY",             # no other site may show our pages inside a frame
+    "Referrer-Policy": "no-referrer",      # don't leak our URLs to other sites
+}
+# The API only returns JSON, so it needs to load nothing and may never be framed
+API_CSP = "default-src 'none'; frame-ancestors 'none'"
+
+
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next):
+    response = await call_next(request)          # let the endpoint build its response first
+    response.headers.update(SECURITY_HEADERS)
+    if request.url.path != "/docs":              # /docs gets its own CSP in step 2
+        response.headers["Content-Security-Policy"] = API_CSP
+    return response
+
 @app.get("/api/health")
 def health(request: Request):
     if request.app.state.model is None:
