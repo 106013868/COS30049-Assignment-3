@@ -34,7 +34,8 @@ async def lifespan(app: FastAPI):
     # Runs once when the server stops (nothing to clean up)
 
 
-app = FastAPI(title="PhishLens API", lifespan=lifespan)
+app = FastAPI(title="PhishLens API", lifespan=lifespan,
+              redoc_url=None) # switch off second docs page, we only want /docs
 
 # Browsers may only read API responses from our own front end
 # Least privilege
@@ -55,13 +56,26 @@ SECURITY_HEADERS = {
 # The API only returns JSON, so it needs to load nothing and may never be framed
 API_CSP = "default-src 'none'; frame-ancestors 'none'"
 
+# /docs loads its files from a CDN, so its policy allows only what it needs
+DOCS_CSP = (
+    "default-src 'none'; "
+    "script-src https://cdn.jsdelivr.net 'sha256-QOOQu4W1oxGqd2nbXbxiA1Di6OHQOLQD+o+G9oWL8YY='; "
+    "style-src https://cdn.jsdelivr.net 'unsafe-inline'; "
+    "img-src https://fastapi.tiangolo.com data:; "
+    "connect-src 'self'; "
+    "frame-ancestors 'none'; "
+    "base-uri 'none'"
+)
+
 
 @app.middleware("http")
 async def add_security_headers(request: Request, call_next):
     response = await call_next(request)          # let the endpoint build its response first
     response.headers.update(SECURITY_HEADERS)
-    if request.url.path != "/docs":              # /docs gets its own CSP in step 2
+    if request.url.path != "/docs":
         response.headers["Content-Security-Policy"] = API_CSP
+    else:
+        response.headers["Content-Security-Policy"] = DOCS_CSP
     return response
 
 @app.get("/api/health")
