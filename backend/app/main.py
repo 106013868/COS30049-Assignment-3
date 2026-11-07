@@ -4,13 +4,15 @@ import logging
 from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI, HTTPException, Request
-from fastapi.responses import JSONResponse
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.config import settings
+from app.errors import error_response, http_error_handler, validation_error_handler
 from app.ml import config as cfg
 from app.ml.inference import load_model, predict_url
-from app.schemas import PredictRequest, PredictResponse
+from app.schemas import (ErrorResponse, HealthResponse, ModelInfoResponse,PredictRequest, PredictResponse)
 from app.signals import build_signals
 
 logger = logging.getLogger("phishlens")
@@ -35,18 +37,18 @@ async def lifespan(app: FastAPI):
     # Runs once when the server stops (nothing to clean up)
 
 
-app = FastAPI(title="PhishLens API", lifespan=lifespan,
-              redoc_url=None) # switch off second docs page, we only want /docs
-
-# Browsers may only read API responses from our own front end
-# Least privilege
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[settings.frontend_origin],
-    allow_methods=["GET", "POST"],             # the only methods the API uses
-    allow_headers=["Content-Type"],            # the only header the front end sends
-    allow_credentials=False,                   # no cookies or logins in this app
+app = FastAPI(
+    title="PhishLens API",
+    description="Checks whether a URL looks like phishing, using only the text of the URL. "
+                "The URL is never visited.",
+    version="1.0",
+    lifespan=lifespan,
+    redoc_url=None,  # switch off second docs page, we only want /docs
 )
+
+# every error leaves the API in the same JSON format (see errors.py)
+app.add_exception_handler(RequestValidationError, validation_error_handler)
+app.add_exception_handler(StarletteHTTPException, http_error_handler)
 
 # Security headers added to every response
 SECURITY_HEADERS = {
@@ -74,17 +76,33 @@ DOCS_CSP = (
 # The largest valid request is a 2,048-character URL, about 24 KB at most
 MAX_BODY_BYTES = 32 * 1024
 
+# Browsers may only read API responses from our own front end
+# Least privilege
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[settings.frontend_origin],
+    allow_methods=["GET", "POST"],             # the only methods the API uses
+    allow_headers=["Content-Type"],            # the only header the front end sends
+    allow_credentials=False,                   # no cookies or logins in this app
+)
+
 @app.middleware("http")
 async def limit_body_size(request: Request, call_next):
     length = request.headers.get("content-length")
     # A body with no declared size could be any size, so it is refused
     if request.method == "POST" and (length is None or "transfer-encoding" in request.headers):
-        return JSONResponse(status_code=411, content={"detail": "Content-Length header is required"})
-    # The declared size is checked from the headers alone, before any of the body is read
+        return error_response(411, "Content-Length header is required")    # The declared size is checked from the headers alone, before any of the body is read
     if length is not None and int(length) > MAX_BODY_BYTES:
-        return JSONResponse(status_code=413, content={"detail": "Request body is too large"})
+        return error_response(413, "Request body is too large")
     return await call_next(request)
 
+@app.middleware("http")
+async def catch_unexpected_errors(request: Request, call_next):
+    try:
+        return await call_next(request)
+    except Exception:
+        logger.exception("Unexpected error")
+        return error_response(500, "Something went wrong. Please try again.")
 
 @app.middleware("http")
 async def add_security_headers(request: Request, call_next):
@@ -96,11 +114,17 @@ async def add_security_headers(request: Request, call_next):
         response.headers["Content-Security-Policy"] = DOCS_CSP
     return response
 
-@app.get("/api/health")
+# error replies listed on /docs for each endpoint
+UNAVAILABLE = {503: {"model": ErrorResponse, "description": "Model not loaded, or server busy"}}
+
+@app.get("/api/health", response_model=HealthResponse,
+         summary="Check the server is ready",
+         description="Returns ok when the server is running and the model has loaded. "
+                     "The front end calls this when it starts.",
+         responses=UNAVAILABLE)
 def health(request: Request):
     if request.app.state.model is None:
-        return JSONResponse(status_code=503,
-                            content={"status": "unavailable", "model_loaded": False})
+        raise HTTPException(status_code=503, detail="Model is not available")    
     return {"status": "ok", "model_loaded": True}
 
 
@@ -118,7 +142,18 @@ async def take_prediction_slot():
 
 
 @app.post("/api/predict", response_model=PredictResponse,
-          dependencies=[Depends(take_prediction_slot)])
+          dependencies=[Depends(take_prediction_slot)],
+          summary="Score a URL",
+          description="Runs the URL through the trained model and returns whether it looks like "
+                      "phishing or legitimate, how confident the model is, a trust score from 0 "
+                      "to 100, the 9 features the model used, and signal cards that explain "
+                      "the result. The URL is only read as text, never visited.",
+          responses={
+              411: {"model": ErrorResponse, "description": "No Content-Length header"},
+              413: {"model": ErrorResponse, "description": "Request body over 32 KB"},
+              422: {"model": ErrorResponse, "description": "Invalid URL (empty, spaces, too long)"},
+              **UNAVAILABLE,
+          })
 def predict(body: PredictRequest, request: Request):
     model = request.app.state.model
     if model is None:
@@ -143,3 +178,19 @@ def predict(body: PredictRequest, request: Request):
         signals=build_signals(body.url, features),   # filled in by Step 13
         model_version=MODEL_VERSION,
     )
+
+
+@app.get("/api/model-info", response_model=ModelInfoResponse,
+         summary="Get feature averages for the comparison chart",
+         description="Returns the model version, the 9 features it uses, and the average value "
+                     "of each feature for legitimate and phishing URLs in the training data.",
+         responses=UNAVAILABLE)
+def model_info(request: Request):
+    reference = request.app.state.reference
+    if reference is None:
+        raise HTTPException(status_code=503, detail="Model is not available")
+    return ModelInfoResponse(
+        model_version=MODEL_VERSION,
+        features=cfg.FEATURE_COLUMNS,
+        reference=reference,
+    )    

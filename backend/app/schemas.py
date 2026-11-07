@@ -68,10 +68,36 @@ class PredictResponse(BaseModel):
     }
 
 
+class HealthResponse(BaseModel):
+    status: Literal["ok"]
+    model_loaded: bool
+
+    model_config = {
+        "json_schema_extra": {"examples": [{"status": "ok", "model_loaded": True}]}
+    }
+
+
 class ModelInfoResponse(BaseModel):
     model_version: str
     features: list[str]
     reference: dict[str, dict[str, float]]
+
+    model_config = {
+        "json_schema_extra": {
+            "examples": [{
+                "model_version": "hgb-a2-1.0",
+                "features": ["url_length", "domain_length", "path_length", "digit_count",
+                             "special_character_count", "dot_count", "subdomain_count",
+                             "has_ip", "suspicious_keyword_count"],
+                "reference": {
+                    "legitimate": {"url_length": 56.52, "subdomain_count": 0.38,
+                                   "has_ip": 0.0, "suspicious_keyword_count": 0.07},
+                    "phishing": {"url_length": 57.2, "subdomain_count": 0.48,
+                                 "has_ip": 0.06, "suspicious_keyword_count": 0.06},
+                },
+            }]
+        }
+    }
 
 
 class ErrorDetail(BaseModel):
