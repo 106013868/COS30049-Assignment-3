@@ -54,7 +54,7 @@ SECURITY_HEADERS = {
     "Referrer-Policy": "no-referrer",      # don't leak our URLs to other sites
 }
 # The API only returns JSON, so it needs to load nothing and may never be framed
-API_CSP = "default-src 'none'; frame-ancestors 'none'"
+API_CSP = "default-src 'none'; form-action 'none'; frame-ancestors 'none'"
 
 # /docs loads its files from a CDN, so its policy allows only what it needs
 DOCS_CSP = (
@@ -63,6 +63,7 @@ DOCS_CSP = (
     "style-src https://cdn.jsdelivr.net 'unsafe-inline'; "
     "img-src https://fastapi.tiangolo.com data:; "
     "connect-src 'self'; "
+    "form-action 'none'; "
     "frame-ancestors 'none'; "
     "base-uri 'none'"
 )
