@@ -1,8 +1,9 @@
+import asyncio
 import json
 import logging
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -102,7 +103,22 @@ def health(request: Request):
                             content={"status": "unavailable", "model_loaded": False})
     return {"status": "ok", "model_loaded": True}
 
-@app.post("/api/predict", response_model=PredictResponse)
+
+# Denial of service defence, part 2: only a few predictions may run at once
+MAX_PREDICTIONS_AT_ONCE = 4
+prediction_slots = asyncio.Semaphore(MAX_PREDICTIONS_AT_ONCE)
+
+
+async def take_prediction_slot():
+    if prediction_slots.locked():            # every slot is busy: turn the request away now
+        raise HTTPException(status_code=503, detail="Server is busy, please try again",
+                            headers={"Retry-After": "1"})
+    async with prediction_slots:             # hold a slot until the prediction finishes
+        yield
+
+
+@app.post("/api/predict", response_model=PredictResponse,
+          dependencies=[Depends(take_prediction_slot)])
 def predict(body: PredictRequest, request: Request):
     model = request.app.state.model
     if model is None:
