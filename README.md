@@ -64,7 +64,7 @@ TODO (front end)
 
 ## Model Performance
 
-Assignment 2 results on the grouped test split (no website appears in both training and test data). The brief states model accuracy is not marked in this assignment.
+Assignment 2 results on the grouped test split (no website appears in both training and test data).
 
 | Task | Model | Accuracy | Precision | Recall | F1-Score |
 |------|-------|----------|-----------|--------|----------|
@@ -74,48 +74,33 @@ Assignment 2 results on the grouped test split (no website appears in both train
 
 <!-- Brief, 3 Deliverables: "API documentation. Use the /docs page that FastAPI generates for you. Make sure every endpoint has a description and an example request and response." -->
 
-Interactive API docs available at `http://127.0.0.1:8000/docs` when backend is running. The second docs page FastAPI provides by default (`/redoc`) is switched off.
+Interactive docs with full examples at `http://127.0.0.1:8000/docs` while the backend is running.
 
-### Endpoints
-
-**GET /api/health**
-
-Server and model status. Returns `200` when the model is loaded, `503` when it is not.
+**GET /api/health**: server and model status. Returns `200` when the model is loaded, `503` when it is not.
 ```json
 {"status": "ok", "model_loaded": true}
 ```
 
-**POST /api/predict**
-
-Scores one URL. Returns `200`, `422` for invalid input, `503` if the model is not loaded.
+**POST /api/predict**: scores one URL. Returns `200`, `422` for invalid input, `411` or `413` for a body with no declared size or over 32 KB, and `503` if the model is not loaded or the server is busy.
 
 Request:
 ```json
-{
-  "url": "http://secure-login.verify-account.xyz/signin"
-}
+{"url": "http://secure-login.verify-account.xyz/signin"}
 ```
 
-Response:
+Response (shortened):
 ```json
 {
-  "url": "secure-login.verify-account.xyz/signin",
+  "url": "http://secure-login.verify-account.xyz/signin",
   "verdict": "phishing",
-  "confidence": 0.81,
-  "trust_score": 19,
-  "features": {
-    "url_length": 38, "domain_length": 31, "path_length": 7,
-    "digit_count": 0, "special_character_count": 5, "dot_count": 2,
-    "subdomain_count": 1, "has_ip": 0, "suspicious_keyword_count": 4
-  },
-  "signals": [
-    {"id": "keywords", "title": "Suspicious wording",
-     "description": "Contains: login, signin, verify, secure",
-     "status": "warn", "used_by_model": true}
-  ],
+  "confidence": 0.7351,
+  "trust_score": 26,
+  "features": {"url_length": 38.0, "suspicious_keyword_count": 5.0},
+  "signals": [{"id": "keywords", "title": "Suspicious wording", "status": "warn"}],
   "model_version": "hgb-a2-1.0"
 }
 ```
+`features` holds the 9 URL features the model uses, and `signals` holds the explanation cards shown with each result.
 
 ### Error format
 <!-- Rubric, Back end 2) Error handling (2 pts): "Invalid input receives a clear message with the right status code. Every error, including unexpected ones such as a failing model call, is returned in the same JSON format, without stack traces or other internal details." -->
@@ -128,7 +113,7 @@ COS30049-Assignment-3/
 ├── .gitignore
 ├── backend/                       # FastAPI backend
 │   ├── app/
-│   │   ├── main.py                # API endpoints, CORS and security headers
+│   │   ├── main.py                # API endpoints, CORS, security headers, DoS limits
 │   │   ├── schemas.py             # Pydantic request and response models
 │   │   ├── config.py              # settings read from environment variables
 │   │   ├── signals.py             # signal cards shown with each result
@@ -165,7 +150,7 @@ TODO: architecture diagram
 
 **What are they trying to achieve?** The phisher wants a wrong answer (a phishing URL scored as legitimate) or knowledge of the model's decision boundary. The abuser wants the service to become unavailable for real users, or wants to extract value from it. The opportunist wants a foothold: anything that leaks information or lets them run code, such as the model file being swapped for a malicious one.
 
-**What can they actually do to it?** Not much, by design, but the little that remains is where we focus. An attacker bypasses the front end and sends requests straight to the API with a tool such as curl, so every real defence is enforced on the back end. The only input they control is a URL string, capped at 2,048 characters. Because PhishLens never visits the submitted URL, makes no outbound requests, stores nothing in a database, and has no user accounts, several whole classes of attack (SSRF, command injection, SQL injection, unsafe file upload, broken access control) do not apply. What an attacker can still do is flood the API, probe or evade the model through repeated queries, and exploit any misconfiguration or vulnerable dependency. The table below maps each risk from section 2.7 to whether our design exposes it. Our defences target the two risks that remain open to a direct attacker.
+**What can they actually do to it?** They can skip the front end and send requests straight to the API with a tool such as curl, so every defence is enforced on the back end. The only input they control is a URL of up to 2,048 characters. PhishLens never visits the URL, runs no system commands, and has no database, file uploads or user accounts, so most risks in section 2.7 do not apply (see the table). What remains is flooding the API, probing or evading the model with repeated queries, and exploiting misconfiguration or vulnerable dependencies. Our two defences target misconfiguration and denial of service.
 
 | Risk (section 2.7) | Applies? | Why |
 |---|---|---|
@@ -183,59 +168,81 @@ TODO: architecture diagram
 | Requirement | How PhishLens meets it | Where |
 |---|---|---|
 | User input is never rendered as HTML | TODO (front end) | TODO |
-| Size limits enforced on the back end | URL must be 1 to 2,048 characters, checked by Pydantic before the endpoint runs. 2,048 is the common practical URL limit; in the training data 99.99% of URLs are 645 characters or shorter and only 2 of 632,907 exceed 2,048 | `backend/app/schemas.py` |
+| Size limits enforced on the back end | URL: 1 to 2,048 characters, checked by Pydantic (only 2 of 632,907 training URLs are longer). Request body: 32 KB, checked before it is read | `backend/app/schemas.py`, `backend/app/main.py` |
 | CORS allows only our front end | One exact origin from `FRONTEND_ORIGIN`; methods GET and POST and header `Content-Type` only; no credentials | `backend/app/main.py` |
-| Secrets kept out of source code | The app needs no secrets. Configuration is read from environment variables; `.env` is git-ignored and `.env.example` is the template. TODO: gitleaks result | `backend/app/config.py` |
+| Secrets kept out of source code | The app needs no secrets. Settings come from environment variables; `.env` is git-ignored and `.env.example` is the template. TODO: gitleaks result | `backend/app/config.py` |
 
-CORS is enforced by browsers, so it stops other websites from using visitors' browsers to call the API. It does not stop direct requests (for example with curl), which is why the defences below are enforced on the server.
+CORS only stops other websites from calling the API through a visitor's browser. It does not stop direct requests such as curl, so the defences below are enforced on the server.
 
 ### Defences (section 2.7)
 
 #### Defence 1: Misconfiguration and vulnerable dependencies (Intermediate)
 
-**Attack:** Default settings leave weaknesses an attacker can use, such as missing security headers that allow clickjacking or content-type sniffing, and libraries with publicly known vulnerabilities.
+**Attack:** Default settings leave weaknesses, such as missing security headers that allow clickjacking or content-type sniffing, and any library can carry a publicly known vulnerability.
 
-**Defence and where in the code:**
-- Security headers middleware added to every response (`backend/app/main.py`):
-  - `X-Content-Type-Options: nosniff`: browsers must trust the declared content type
-  - `X-Frame-Options: DENY`: no other site may show our pages inside a frame
-  - `Referrer-Policy: no-referrer`: our URLs are not leaked to other sites
-  - Content Security Policy for the API: `default-src 'none'; form-action 'none'; frame-ancestors 'none'` (JSON responses load nothing and may not be framed)
-  - Content Security Policy for `/docs`: allows only the Swagger UI files from `cdn.jsdelivr.net`, the FastAPI favicon, and one inline start-up script identified by its SHA-256 hash; requests only to our own server
-- `/redoc` switched off, as it is not needed (less attack surface)
+**Defence** (`backend/app/main.py`):
+- Security headers on every response: `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`
+- Content Security Policy: API responses load nothing and may not be framed (`default-src 'none'; form-action 'none'; frame-ancestors 'none'`). `/docs` may load only Swagger UI from `cdn.jsdelivr.net` and one start-up script fixed by its hash
+- `/redoc` switched off, as it is not needed
 
 **Results:**
 
 | Check | Before | After |
 |---|---|---|
-| `pip-audit -r requirements.txt` (4 Nov 2026) | No known vulnerabilities found | TODO: re-run before submission |
+| `pip-audit -r requirements.txt` | No known vulnerabilities (4 Nov 2026) | TODO: re-run before submission |
 | `npm audit` | TODO (front end) | TODO |
-| OWASP ZAP scan of the running API and `/docs` | 6 alerts (4 Nov 2026): 3 Medium, 2 Low, 1 Informational | 4 alerts (7 Nov 2026): 2 Medium, 1 Low, 1 Informational, all justified below |
+| OWASP ZAP scan of the API and `/docs` | 6 alerts (4 Nov 2026) | 4 alerts (7 Nov 2026), all accepted below |
 
-| ZAP alert | Risk | Before | After |
-|---|---|---|---|
-| Content Security Policy (CSP) Header Not Set | Medium | Found on `/docs` | Fixed |
-| Missing Anti-clickjacking Header | Medium | Found on `/docs` | Fixed |
-| X-Content-Type-Options Header Missing | Low | Found on 4 URLs | Fixed |
-| CSP: Failure to Define Directive with No Fallback (`form-action`) | Medium | Not tested (no CSP yet) | Found, then fixed by adding `form-action 'none'` |
-| CSP: style-src unsafe-inline | Medium | Not tested (no CSP yet) | Justified |
-| Sub Resource Integrity Attribute Missing | Medium | Found on `/docs` | Justified |
-| Cross-Domain JavaScript Source File Inclusion | Low | Found on `/docs` | Justified |
-| Modern Web Application | Informational | Found on `/docs` | Justified |
-
-**Justifications for remaining alerts:**
-- **CSP: style-src unsafe-inline:** Swagger UI sets styles directly on its page elements and does not work without this. Inline styles cannot run code, and scripts stay locked down to the CDN plus one script fixed by its hash. It applies to `/docs` only; the API's own policy has no exceptions.
-- **Sub Resource Integrity Attribute Missing:** FastAPI's built-in docs page does not add integrity hashes to the Swagger UI files. The risk is a compromised CDN. It is accepted because `/docs` is a developer page required by the brief, it loads from one named CDN, and the CSP blocks every other source. Self-hosting the files would remove this finding; we chose to keep the CDN so we do not have to maintain our own copies of Swagger UI.
-- **Cross-Domain JavaScript Source File Inclusion:** Same cause and reasoning as above.
-- **Modern Web Application:** Informational only; ZAP's own solution states no changes are required.
-- **Browser console:** one CSP report remains for Swagger's CSS source map (`swagger-ui.css.map`). It is requested only by browser developer tools, not by the page, so `connect-src` is kept to `'self'`.
+| ZAP alert | Risk | Result |
+|---|---|---|
+| Content Security Policy (CSP) Header Not Set | Medium | Fixed |
+| Missing Anti-clickjacking Header | Medium | Fixed |
+| X-Content-Type-Options Header Missing | Low | Fixed |
+| CSP: Failure to Define Directive with No Fallback | Medium | Fixed with `form-action 'none'` |
+| CSP: style-src unsafe-inline | Medium | Accepted: Swagger UI needs inline styles, which cannot run code. Applies to `/docs` only |
+| Sub Resource Integrity Attribute Missing | Medium | Accepted: FastAPI's docs page loads Swagger UI from a CDN without integrity hashes. The CSP allows only that one CDN |
+| Cross-Domain JavaScript Source File Inclusion | Low | Accepted: same cause as above |
+| Modern Web Application | Informational | No change needed (ZAP's own advice) |
 
 **Cost:**
-- The `/docs` script hash must be updated if a FastAPI upgrade changes its docs page, otherwise `/docs` loads blank
-- `pip-audit` and the ZAP scan only reflect known issues at the time they are run, so they must be repeated after any dependency change
+- If a FastAPI upgrade changes the docs page, the script hash must be updated or `/docs` loads blank
+- `pip-audit` and ZAP only find issues known when they run, so they must be repeated after any dependency change
 
 #### Defence 2: Denial of service (Advanced)
-TODO
+
+**Attack:**
+- **One expensive request:** FastAPI reads and parses the whole body before checking the 2,048-character limit, then echoes the input back in its `422` error. A 200 MB request is read, parsed and sent back in full, and every other user waits meanwhile.
+- **Many requests at once:** every prediction is accepted and queued in the same 40 worker threads that `/api/health` uses, so real users wait behind the attacker.
+
+**Defence** (`backend/app/main.py`):
+- **Body size limit** (`limit_body_size` middleware): a request that declares more than 32 KB gets `413`, decided from its headers before any of the body is read. A `POST` that does not declare its size (a chunked upload) gets `411`. The largest valid request is about 24 KB, so no valid URL is refused.
+- **Prediction slots** (`take_prediction_slot` on `POST /api/predict`): at most 4 predictions run at once, and any extra request gets `503` with `Retry-After: 1` straight away instead of queueing. A slot is taken only after the body has arrived, so slow senders cannot hold one. `/api/health` and `/docs` do not use slots, so they stay responsive.
+- **Why 4:** a prediction takes a few milliseconds, and Python runs only one thread of Python code at a time, so more predictions side by side do not finish sooner.
+- **Already in the design:** `predict` is a plain `def`, so slow inference runs in a worker thread instead of blocking the server, and feature extraction uses no regular expressions that a crafted URL could make backtrack.
+
+**Results** ("before" is git tag `before-dos`; during each test a real user checks `/api/health` 10 times a second):
+
+| Test 1: one 200 MB request | Before | After |
+|---|---|---|
+| Response | `422` after 1.12 s, with all 200 MB sent back | `413` after 0.003 s |
+| Real user, slowest answer | 0.94 s | 0.05 s |
+
+| Test 2: 100 users nonstop for 15 s | Before | After |
+|---|---|---|
+| Served (`200`) / refused (`503`) | 380 / 0 | 251 / 30,133 |
+| Average response time | 4.2 s | 0.05 s |
+| Real user, answers in 20 s | 52 | 200 |
+| Real user, slowest answer | 3.71 s | 0.08 s |
+
+**Variations** (with the defence):
+- Large body with no declared size: `411`, and none of the body is sent
+- Large body that declares a small size: only the declared bytes are read, then the connection is closed
+- Large body sent without waiting for the server's go-ahead: `413`, and the connection is closed after a few MB
+
+**Cost:**
+- During a flood, some real users also get `503` and must retry. One attacker sending flat out can still crowd others out; a per-client rate limit or a CDN in front of the server would fix that.
+- Turning requests away still uses CPU. With instant `503`s the attacker sent 80 times more requests, so fewer predictions completed (251 vs 380).
+- Uploads without a declared size are refused, though browsers always declare it.
 
 ### Advanced security (section 2.8)
 <!-- Brief, 2.8: "Choose one, name it in your README, and do it properly. Only one is marked." -->
