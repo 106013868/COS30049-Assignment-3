@@ -69,6 +69,22 @@ DOCS_CSP = (
 )
 
 
+# Denial of service defence, part 1: refuse huge requests before reading them
+# The largest valid request is a 2,048-character URL, about 24 KB at most
+MAX_BODY_BYTES = 32 * 1024
+
+@app.middleware("http")
+async def limit_body_size(request: Request, call_next):
+    length = request.headers.get("content-length")
+    # A body with no declared size could be any size, so it is refused
+    if request.method == "POST" and (length is None or "transfer-encoding" in request.headers):
+        return JSONResponse(status_code=411, content={"detail": "Content-Length header is required"})
+    # The declared size is checked from the headers alone, before any of the body is read
+    if length is not None and int(length) > MAX_BODY_BYTES:
+        return JSONResponse(status_code=413, content={"detail": "Request body is too large"})
+    return await call_next(request)
+
+
 @app.middleware("http")
 async def add_security_headers(request: Request, call_next):
     response = await call_next(request)          # let the endpoint build its response first
