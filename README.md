@@ -3,7 +3,7 @@
 Web application that checks whether a URL is phishing or legitimate, using a machine learning model trained on URL features. The URL is analysed as text only and is never visited.
 
 - **Backend**: FastAPI 0.162.0, scikit-learn 1.9.1, Python 3.13
-- **Frontend**: React (TODO)
+- **Frontend**: React 19.3.0 with Vite 8.3.6, React Router 8.5.1 and Recharts 3.10.1
 - **ML Model**: HistGradientBoosting classifier (from Assignment 2)
 
 **Group:** TODO: group name
@@ -19,8 +19,8 @@ Web application that checks whether a URL is phishing or legitimate, using a mac
 <!-- Rubric, Source code 1) Runs from the README (2 pts): "Following the README alone on a clean machine starts both the front end and the back end, with no fixes needed. Dependency versions are pinned." -->
 
 ### Prerequisites
-- Python 3.13
-- TODO: Node.js and npm versions
+- 
+- Node.js 22 or later (with npm)
 
 ### Backend Setup
 ```bash
@@ -42,7 +42,14 @@ uvicorn app.main:app
 Backend runs on `http://127.0.0.1:8000`
 
 ### Frontend Setup / running
-TODO
+In a second terminal, from the project root:
+```
+cd frontend
+npm ci
+copy .env.example .env / (Mac: cp .env.example .env)
+npm run dev
+```
+Open http://localhost:5173. The back end must be running first.
 
 ### Configuration
 | Variable | File | Purpose | Default |
@@ -53,7 +60,7 @@ TODO
 ## Usage
 
 ### Checking a URL in the app
-TODO (front end)
+Open http://localhost:5173, paste a URL into URL to Inspect and press Submit. The result shows the verdict, confidence, trust score and signal cards, with two charts below
 
 ### Checking a URL through the API
 1. Start the backend
@@ -72,7 +79,7 @@ Assignment 2 results on the grouped test split (no website appears in both train
 
 ## API Documentation
 
-<!-- Brief, 3 Deliverables: "API documentation. Use the /docs page that FastAPI generates for you. Make sure every endpoint has a description and an example request and response." -->
+add GET /api/model-info: feature averages for the comparison chart. Returns 200, or 503 if the reference data did not load
 
 Interactive docs with full examples at `http://127.0.0.1:8000/docs` while the backend is running.
 

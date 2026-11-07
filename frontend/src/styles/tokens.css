@@ -1,0 +1,24 @@
+/* Design tokens: every colour, font and size used in the app lives here */
+:root {
+    --bg: #050608;
+    --glow: #4b1fa8;
+    --surface: #0b1a24;
+    --surface-2: #0e2433;
+    --border: #1f4a5c;
+    --purple: #b56cff;
+    --purple-soft: #d9b8ff;
+    --cyan: #22d3ee;
+    --danger: #f87171;
+    --text: #f5f7fa;
+    --text-muted: #b4c0cc;
+    --input-bg: #a8c9d6;
+    --input-text: #0b1a24;
+
+    --font-body: "Inter", system-ui, sans-serif;
+    --font-mono: "Space Mono", ui-monospace, monospace;
+
+    --radius-lg: 24px;
+    --radius-sm: 12px;
+    --space: 16px;
+    --max-width: 1040px;
+}

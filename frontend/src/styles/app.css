@@ -1,0 +1,586 @@
+/* ---------- Base ---------- */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+    radial-gradient(ellipse 80% 45% at 50% 0%, rgba(75, 31, 168, 0.55), transparent 70%),
+    var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+h1, h2, h3, p {
+    margin: 0;
+}
+
+button, input {
+    font: inherit;
+}
+
+/* One visible focus ring for every keyboard-focusable element */
+:focus-visible {
+    outline: 3px solid var(--cyan);
+    outline-offset: 3px;
+}
+
+/* Text only screen readers hear */
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+.page {
+    width: 100%;
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 var(--space) 64px;
+}
+
+.card {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    padding: 24px var(--space);
+}
+
+.eyebrow {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--cyan);
+}
+
+.muted {
+    color: var(--text-muted);
+}
+
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 8px 20px;
+    border-radius: 999px;
+    border: 2px solid var(--purple-soft);
+    background: var(--input-bg);
+    color: var(--input-text);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.button:disabled {
+    opacity: 0.7;
+    cursor: wait;
+}
+
+.button-small {
+    min-height: 36px;
+    padding: 4px 14px;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    background: #0f5b6b;
+    border-color: #0f5b6b;
+    color: var(--text);
+}
+
+.error-text {
+    color: var(--danger);
+    font-weight: 500;
+}
+
+/* ---------- Navigation ---------- */
+.nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 16px var(--space);
+}
+
+.nav-logo {
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--text);
+    text-decoration: none;
+}
+
+.nav-links {
+    display: flex;
+    gap: 4px;
+}
+
+.nav-links a {
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    text-decoration: none;
+}
+
+.nav-links a.active {
+    color: var(--text);
+    background: rgba(181, 108, 255, 0.2);
+}
+
+.banner {
+    max-width: var(--max-width);
+    margin: 0 auto 16px;
+    padding: 12px var(--space);
+    border: 1px solid var(--danger);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    background: rgba(248, 113, 113, 0.12);
+}
+
+/* ---------- Hero ---------- */
+.hero {
+    text-align: center;
+    padding: 24px 0 32px;
+}
+
+.hero h1 {
+    font-size: 56px;
+    font-weight: 300;
+    line-height: 1.1;
+    margin-bottom: 16px;
+}
+
+.hero > p {
+    font-size: 18px;
+    max-width: 760px;
+    margin: 0 auto;
+}
+
+.intro {
+    display: grid;
+    gap: 24px;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.intro h2 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 8px 0;
+}
+
+/* Decorative perspective grid, drawn in CSS instead of an image */
+.grid-art {
+    height: 180px;
+    border-radius: var(--radius-lg);
+    border: 1px solid #3a2a6b;
+    background: #0d0a1c;
+    overflow: hidden;
+    perspective: 300px;
+}
+
+.grid-art::before {
+    content: "";
+    display: block;
+    width: 200%;
+    height: 200%;
+    margin-left: -50%;
+    background-image:
+    linear-gradient(rgba(181, 108, 255, 0.45) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(181, 108, 255, 0.45) 1px, transparent 1px);
+    background-size: 28px 28px;
+    transform: rotateX(60deg);
+    transform-origin: top;
+}
+
+/* ---------- Inspect form ---------- */
+.inspect h2 {
+    font-size: 22px;
+    font-weight: 400;
+    margin-bottom: 4px;
+}
+
+.inspect .muted {
+    font-size: 15px;
+    margin-bottom: 20px;
+}
+
+.inspect label {
+    display: block;
+    margin-bottom: 8px;
+}
+
+.input-row {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.input-row input {
+    flex: 1;
+    min-height: 48px;
+    padding: 10px 16px;
+    border: 2px solid transparent;
+    border-radius: var(--radius-sm);
+    background: var(--input-bg);
+    color: var(--input-text);
+}
+
+.input-row input::placeholder {
+    color: #36515c;
+}
+
+.input-row input[aria-invalid="true"] {
+    border-color: var(--danger);
+}
+
+.field-message {
+    min-height: 24px;
+    margin-top: 8px;
+}
+
+/* ---------- Result card ---------- */
+.result-top {
+    display: grid;
+    gap: 24px;
+    justify-items: center;
+    text-align: center;
+}
+
+.result-text {
+    display: grid;
+    gap: 10px;
+    justify-items: center;
+}
+
+.result-text h2 {
+    font-size: 24px;
+    font-weight: 400;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 14px;
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--bg);
+}
+
+.badge.safe {
+    background: var(--cyan);
+}
+
+.badge.phishing {
+    background: var(--danger);
+}
+
+.confidence {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.checked-url {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    font-family: var(--font-mono);
+    font-size: 14px;
+}
+
+.divider {
+    border: 0;
+    border-top: 3px solid #2f5f6b;
+    margin: 28px 0 20px;
+}
+
+.signals h3 {
+    font-size: 18px;
+    font-weight: 400;
+    margin-bottom: 12px;
+}
+
+.signals h3.extra {
+    margin-top: 24px;
+    font-size: 16px;
+    color: var(--text-muted);
+}
+
+.signal-grid {
+    display: grid;
+    gap: 12px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.signal {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface-2);
+}
+
+.signal-title {
+    font-weight: 500;
+}
+
+.signal-desc {
+    font-size: 14px;
+}
+
+.signal-icon {
+    flex: none;
+    margin-top: 2px;
+}
+
+.signal-icon.pass {
+    color: var(--cyan);
+}
+
+.signal-icon.warn {
+    color: var(--danger);
+}
+
+.signal-icon.info {
+    color: var(--purple-soft);
+}
+
+.disclaimer {
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+/* ---------- Charts ---------- */
+.charts {
+    display: grid;
+    gap: 24px;
+    margin-top: 24px;
+}
+
+/* Let grid items shrink below their content, so charts fit on a phone */
+.charts > * {
+    min-width: 0;
+}
+
+.chart-card h2 {
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.chart-card .muted {
+    font-size: 14px;
+    margin-bottom: 12px;
+}
+
+.toggle-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.toggle {
+    min-height: 36px;
+    padding: 4px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+}
+
+.toggle[aria-pressed="true"] {
+    background: var(--purple);
+    border-color: var(--purple);
+    color: var(--bg);
+    font-weight: 600;
+}
+
+.chart-box {
+    width: 100%;
+    height: 300px;
+}
+
+.history-list li {
+    min-width: 0;
+}
+
+.history-list {
+    display: grid;
+    gap: 8px;
+    padding: 0;
+    margin: 16px 0 0;
+    list-style: none;
+}
+
+.history-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface-2);
+    color: var(--text);
+    text-align: left;
+    cursor: pointer;
+}
+
+.history-score {
+    flex: none;
+}
+
+.history-item[aria-current="true"] {
+    border-color: var(--cyan);
+}
+
+.history-url {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.chart-tooltip {
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--text);
+    font-size: 14px;
+}
+
+/* ---------- About page ---------- */
+.about h1 {
+    font-size: 40px;
+    font-weight: 400;
+    margin: 24px 0 16px;
+}
+
+.about > p {
+    font-size: 18px;
+    max-width: 560px;
+    margin-bottom: 32px;
+}
+
+.about-cards {
+    display: grid;
+    gap: 20px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.about-card {
+    display: grid;
+    justify-items: center;
+    gap: 24px;
+    padding: 28px 20px;
+    border: 1px solid #a48ad9;
+    border-radius: var(--radius-lg);
+    background: linear-gradient(to bottom, #15171c 45%, #4b1fa8 85%, #b8a6e8);
+    text-align: center;
+}
+
+.about-card svg {
+    color: var(--purple);
+}
+
+/* ---------- Error and 404 pages ---------- */
+.message-page {
+    max-width: 560px;
+    margin: 48px auto;
+    text-align: center;
+}
+
+.message-page h1 {
+    font-size: 32px;
+    font-weight: 400;
+    margin: 8px 0 12px;
+}
+
+.message-page p {
+    margin-bottom: 24px;
+}
+
+.message-page a {
+    color: var(--cyan);
+}
+
+/* ---------- Bigger screens ---------- */
+@media (min-width: 768px) {
+    .card {
+    padding: 36px 48px;
+    }
+
+    .hero h1 {
+    font-size: 88px;
+    }
+
+    .intro {
+    grid-template-columns: 1.4fr 1fr;
+    }
+
+    .input-row {
+    flex-direction: row;
+    }
+
+    .result-top {
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    justify-items: start;
+    text-align: left;
+    }
+
+    .result-text {
+    justify-items: start;
+    }
+
+    .signal-grid {
+    grid-template-columns: 1fr 1fr;
+    }
+
+    .about-cards {
+    grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.chart-legend {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 10px;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.legend-swatch {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+}
+
+.legend-line {
+    display: inline-block;
+    width: 20px;
+    border-top: 2px dashed var(--purple-soft);
+}
