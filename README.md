@@ -2,8 +2,8 @@
 
 Web application that checks whether a URL is phishing or legitimate, using a machine learning model trained on URL features. The URL is analysed as text only and is never visited.
 
-- **Backend**: FastAPI 0.162.0, scikit-learn 1.9.1, Python 3.13
-- **Frontend**: React 19.3.0 with Vite 8.3.6, React Router 8.5.1 and Recharts 3.10.1
+- **Backend**: FastAPI 0.162.0, scikit-learn 1.9.1, Python 3.15
+- **Frontend**: React 19.3.1 with Vite 8.3.6, React Router 8.5.1 and Recharts 3.10.1
 - **ML Model**: HistGradientBoosting classifier (from Assignment 2)
 
 **Group:** TODO: group name
@@ -19,7 +19,7 @@ Web application that checks whether a URL is phishing or legitimate, using a mac
 <!-- Rubric, Source code 1) Runs from the README (2 pts): "Following the README alone on a clean machine starts both the front end and the back end, with no fixes needed. Dependency versions are pinned." -->
 
 ### Prerequisites
-- 
+- Python 3.15
 - Node.js 22 or later (with npm)
 
 ### Backend Setup
@@ -45,8 +45,8 @@ Backend runs on `http://127.0.0.1:8000`
 In a second terminal, from the project root:
 ```
 cd frontend
-npm ci
-copy .env.example .env / (Mac: cp .env.example .env)
+npm ci                             # installs the exact versions in package-lock.json
+copy .env.example .env             # macOS: cp .env.example .env
 npm run dev
 ```
 Open http://localhost:5173. The back end must be running first.
@@ -54,6 +54,7 @@ Open http://localhost:5173. The back end must be running first.
 ### Configuration
 | Variable | File | Purpose | Default |
 |---|---|---|---|
+| `VITE_API_BASE_URL` | `frontend/.env` | Address of the back end | `http://localhost:8000` |
 | `FRONTEND_ORIGIN` | `backend/.env` | The only origin allowed by CORS | `http://localhost:5173` |
 | `LOG_LEVEL` | `backend/.env` | TODO | `info` |
 
@@ -78,8 +79,6 @@ Assignment 2 results on the grouped test split (no website appears in both train
 | Phishing URL detection | HistGradientBoosting (balanced) | 0.724 | 0.570 | 0.690 | 0.624 |
 
 ## API Documentation
-
-add GET /api/model-info: feature averages for the comparison chart. Returns 200, or 503 if the reference data did not load
 
 Interactive docs with full examples at `http://127.0.0.1:8000/docs` while the backend is running.
 
@@ -109,9 +108,13 @@ Response (shortened):
 ```
 `features` holds the 9 URL features the model uses, and `signals` holds the explanation cards shown with each result.
 
+**GET /api/model-info**: the model version, its 9 features, and the average value of each feature for legitimate and phishing URLs in the training data. Used by the comparison chart. Returns `200`, or `503` if the reference data did not load.
+
 ### Error format
 <!-- Rubric, Back end 2) Error handling (2 pts): "Invalid input receives a clear message with the right status code. Every error, including unexpected ones such as a failing model call, is returned in the same JSON format, without stack traces or other internal details." -->
-TODO
+Every error uses the same JSON shape: `{"error": {"code": "VALIDATION_ERROR", "message": "URL must not contain spaces."}}`. 
+Codes: `NOT_FOUND` (404), `METHOD_NOT_ALLOWED` (405), `LENGTH_REQUIRED` (411), `PAYLOAD_TOO_LARGE` (413), `VALIDATION_ERROR` (422), `INTERNAL_ERROR` (500), `SERVICE_UNAVAILABLE` (503). 
+Unexpected errors are logged on the server only; the client gets a generic message with no stack trace.
 
 ## Project Structure
 ```
@@ -121,6 +124,7 @@ COS30049-Assignment-3/
 ├── backend/                       # FastAPI backend
 │   ├── app/
 │   │   ├── main.py                # API endpoints, CORS, security headers, DoS limits
+│   │   ├── errors.py              # one JSON format for every error
 │   │   ├── schemas.py             # Pydantic request and response models
 │   │   ├── config.py              # settings read from environment variables
 │   │   ├── signals.py             # signal cards shown with each result
@@ -138,17 +142,50 @@ COS30049-Assignment-3/
 │   ├── requirements.txt           # pinned back-end dependencies
 │   └── .env.example               # configuration template
 └── frontend/                      # React frontend
-    └── TODO
+    ├── .env.example               # configuration template
+    ├── package.json               # pinned front-end dependencies
+    ├── package-lock.json          # exact versions of every package
+    └── src/
+        ├── App.jsx                # routes, session history, health check
+        ├── api/client.js          # every call to the back end
+        ├── components/            # form, result card, gauge, signals, charts, error boundary
+        ├── pages/                 # Home, How it works, 404
+        ├── styles/                # design tokens and styles
+        └── utils/                 # URL validation, feature names
 ```
 
 ## Architecture
 <!-- Brief, 3 Deliverables: "an architecture diagram" -->
-TODO: architecture diagram
+  ```
+   Browser (React, http://localhost:5173)
+   ┌──────────────────────────────────────────────┐
+   │ InspectForm ── validates the URL first       │
+   │      │                                       │
+   │ api/client.js ── fetch, reads JSON errors    │
+   └──────┼───────────────────────────────────────┘
+          │  POST /api/predict  {"url": "..."}
+          │  GET  /api/model-info, /api/health
+          ▼
+   FastAPI (http://localhost:8000)
+   ┌──────────────────────────────────────────────┐
+   │ security headers → CORS → error catcher      │
+   │   → body size limit (32 KB)                  │
+   │ prediction slots (max 4 at once)             │
+   │ Pydantic PredictRequest (1 to 2,048 chars)   │
+   │      │                                       │
+   │ predict_url: clean URL → 9 features → model  │  model loaded once at startup
+   │      │                         (joblib file) │
+   │ build_signals → PredictResponse (JSON)       │
+   └──────────────────────────────────────────────┘
+          │  verdict, confidence, trust score, features, signals
+          ▼
+   ResultCard, TrustGauge, SignalCards, FeatureChart, HistoryChart
+  ```
 
 ## Dependencies
 <!-- Brief, 2.4 Running the application: "Dependency versions are pinned, so the application runs the same way for the marker as it does for you" -->
 - **Backend:** `backend/requirements.txt`
-- **Frontend:** TODO
+- **Frontend:** `frontend/package.json` (exact versions), locked in `frontend/package-lock.json`
 
 ## Security
 
@@ -174,7 +211,7 @@ TODO: architecture diagram
 ### Security hygiene
 | Requirement | How PhishLens meets it | Where |
 |---|---|---|
-| User input is never rendered as HTML | TODO (front end) | TODO |
+| User input is never rendered as HTML | React escapes all text. The checked URL is shown as plain text only, never in `href`, `window.open` or `dangerouslySetInnerHTML` | `frontend/src/components/ResultCard.jsx` |
 | Size limits enforced on the back end | URL: 1 to 2,048 characters, checked by Pydantic (only 2 of 632,907 training URLs are longer). Request body: 32 KB, checked before it is read | `backend/app/schemas.py`, `backend/app/main.py` |
 | CORS allows only our front end | One exact origin from `FRONTEND_ORIGIN`; methods GET and POST and header `Content-Type` only; no credentials | `backend/app/main.py` |
 | Secrets kept out of source code | The app needs no secrets. Settings come from environment variables; `.env` is git-ignored and `.env.example` is the template. TODO: gitleaks result | `backend/app/config.py` |
@@ -197,7 +234,7 @@ CORS only stops other websites from calling the API through a visitor's browser.
 | Check | Before | After |
 |---|---|---|
 | `pip-audit -r requirements.txt` | No known vulnerabilities (4 Nov 2026) | TODO: re-run before submission |
-| `npm audit` | TODO (front end) | TODO |
+| `npm audit` | Not run (no front end yet) | 0 vulnerabilities (8 Nov 2026) |
 | OWASP ZAP scan of the API and `/docs` | 6 alerts (4 Nov 2026) | 4 alerts (7 Nov 2026), all accepted below |
 
 | ZAP alert | Risk | Result |
