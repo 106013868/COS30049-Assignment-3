@@ -175,7 +175,7 @@ def predict(body: PredictRequest, request: Request):
         confidence=round(confidence, 4),
         trust_score=int(row[cfg.TRUST_COLUMN]),
         features=features,
-        signals=build_signals(body.url, features),   # filled in by Step 13
+        signals=build_signals(body.url, features),   
         model_version=MODEL_VERSION,
     )
 
