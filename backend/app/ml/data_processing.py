@@ -4,6 +4,7 @@ cleans raw url dataset, extracts features and saves processed csv files
 """
 #import pandas as pd
 import ipaddress
+import unicodedata
 
 from urllib.parse import urlparse
 from .config import SUSPICIOUS_KEYWORDS
@@ -37,6 +38,27 @@ def check_https(url):
         url.startswith("https://")
     )
 
+# letters from other alphabets that look like Latin ones
+LOOKALIKES = str.maketrans({
+    "а": "a", "с": "c", "е": "e", "һ": "h", "і": "i", "ј": "j", "ӏ": "l", "о": "o", "р": "p",
+    "ԛ": "q", "ѕ": "s", "ԝ": "w", "х": "x", "у": "y",
+    "А": "A", "В": "B", "С": "C", "Е": "E", "Н": "H", "І": "I", "Ј": "J", "К": "K", "М": "M",
+    "О": "O", "Р": "P", "Ѕ": "S", "Т": "T", "Х": "X", "У": "Y",
+    "α": "a", "ι": "i", "κ": "k", "ν": "v", "ο": "o", "ρ": "p", "υ": "u", "χ": "x",
+    "Α": "A", "Β": "B", "Ε": "E", "Ζ": "Z", "Η": "H", "Ι": "I", "Κ": "K", "Μ": "M", "Ν": "N",
+    "Ο": "O", "Ρ": "P", "Τ": "T", "Υ": "Y", "Χ": "X",
+    "օ": "o", "ս": "u", "հ": "h", "ո": "n", "զ": "q", "ց": "g",
+    "ı": "i", "ɩ": "i", "ɑ": "a", "ɡ": "g",
+})
+
+def normalise_url(url):
+    """
+    turns look-alike characters into plain ones before features are extracted
+    """
+    text = unicodedata.normalize("NFKD", url)
+    text = "".join(c for c in text if not unicodedata.combining(c) and unicodedata.category(c) != "Cf")
+    # swap look-alikes from other alphabets for Latin letters
+    return text.translate(LOOKALIKES)
 
 # removes url prefixes
 def clean_url(url):

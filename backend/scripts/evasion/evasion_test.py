@@ -100,10 +100,6 @@ def main(run):
     with open(HERE / "evasion_urls.csv", encoding="utf-8") as f:
         urls = [row["url"] for row in csv.DictReader(f)]
 
-    print(f"\n{BOLD}PhishLens detection evasion test ({run}){END}")
-    print("Each URL goes to POST /api/predict, the same call the app makes.")
-    print("Look-alike letters are shown in yellow.\n")
-
     results, requests = [], 0
     for number, url in enumerate(urls, 1):
         try:

@@ -1,7 +1,7 @@
 import joblib
 import pandas as pd
 from . import config as cfg
-from .data_processing import clean_url, check_https, extract_features
+from .data_processing import clean_url, check_https, extract_features, normalise_url
 
 def load_model(path=cfg.MODEL_PATH):
     """
@@ -33,6 +33,8 @@ def predict_url(model, url):
     In: raw url
     Out: one row dataframe with prediction and trust score
     """
+    # look-alike and invisible characters become plain ones first (2.8 defence)
+    url = normalise_url(url)
     # same cleaning steps as data_processing
     cleaned = clean_url(url)
     # https is read from the raw url because clean_url removes the protocol
