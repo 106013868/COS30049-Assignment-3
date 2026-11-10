@@ -45,9 +45,10 @@ Backend runs on `http://127.0.0.1:8000`
 In a second terminal, from the project root:
 ```
 cd frontend
-npm ci                             # installs the exact versions in package-lock.json
+npm ci
 copy .env.example .env             # macOS: cp .env.example .env
-npm run dev
+npm run build
+npm run preview
 ```
 Open http://localhost:5173. The back end must be running first.
 
