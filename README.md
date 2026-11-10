@@ -2,7 +2,7 @@
 
 Web application that checks whether a URL is phishing or legitimate, using a machine learning model trained on URL features. The URL is analysed as text only and is never visited.
 
-- **Backend**: FastAPI 0.162.0, scikit-learn 1.9.1, Python 3.15
+- **Backend**: FastAPI 0.162.0, scikit-learn 1.9.1, Python 3.13
 - **Frontend**: React 19.3.1 with Vite 8.3.6, React Router 8.5.1 and Recharts 3.10.1
 - **ML Model**: HistGradientBoosting classifier (from Assignment 2)
 
@@ -19,7 +19,7 @@ Web application that checks whether a URL is phishing or legitimate, using a mac
 <!-- Rubric, Source code 1) Runs from the README (2 pts): "Following the README alone on a clean machine starts both the front end and the back end, with no fixes needed. Dependency versions are pinned." -->
 
 ### Prerequisites
-- Python 3.15
+- Python 3.13
 - Node.js 22 or later (with npm)
 
 ### Backend Setup
@@ -222,75 +222,76 @@ CORS only stops other websites from calling the API through a visitor's browser.
 
 #### Defence 1: Misconfiguration and vulnerable dependencies (Intermediate)
 
-**Attack:** Default settings leave weaknesses, such as missing security headers that allow clickjacking or content-type sniffing, and any library can carry a publicly known vulnerability.
+**Attack:** Default settings leave weaknesses, like missing headers that allow clickjacking, and libraries can carry known vulnerabilities.
 
-**Defence** (`backend/app/main.py`):
-- Security headers on every response: `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`
-- Content Security Policy: API responses load nothing and may not be framed (`default-src 'none'; form-action 'none'; frame-ancestors 'none'`). `/docs` may load only Swagger UI from `cdn.jsdelivr.net` and one start-up script fixed by its hash
-- `/redoc` switched off, as it is not needed
+**Defence:**
+- Back end (`backend/app/main.py`): `nosniff`, `X-Frame-Options: DENY` and `Referrer-Policy` headers on every response, a Content Security Policy that lets API responses load nothing, and `/redoc` switched off
+- Front end (`frontend/vite.config.js`): the same headers, a Content Security Policy limited to our own files, Google Fonts and our API, and the app served as a built version instead of the development server
 
-**Results:**
+**Results** (reports in `docs/`):
+
+`pip-audit` - No known vulnerabilities (10 Nov)
+`npm audit` - 0 vulnerabilities (10 Nov)
 
 | Check | Before | After |
 |---|---|---|
-| `pip-audit -r requirements.txt` | No known vulnerabilities (4 Nov 2026) | TODO: re-run before submission |
-| `npm audit` | Not run (no front end yet) | 0 vulnerabilities (8 Nov 2026) |
-| OWASP ZAP scan of the API and `/docs` | 6 alerts (4 Nov 2026) | 4 alerts (7 Nov 2026), all accepted below |
+| ZAP, API and `/docs` | 6 alerts | 4, all accepted and justified below |
+| ZAP, front end | 9 alerts | 2, both accepted and justified below |
 
-| ZAP alert | Risk | Result |
+Fixed: the missing Content Security Policy, anti-clickjacking and nosniff headers on both, the API's missing `form-action` rule, and the front end's Path Traversal.
+
+| Still open | Risk | Why it's accepted |
 |---|---|---|
-| Content Security Policy (CSP) Header Not Set | Medium | Fixed |
-| Missing Anti-clickjacking Header | Medium | Fixed |
-| X-Content-Type-Options Header Missing | Low | Fixed |
-| CSP: Failure to Define Directive with No Fallback | Medium | Fixed with `form-action 'none'` |
-| CSP: style-src unsafe-inline | Medium | Accepted: Swagger UI needs inline styles, which cannot run code. Applies to `/docs` only |
-| Sub Resource Integrity Attribute Missing | Medium | Accepted: FastAPI's docs page loads Swagger UI from a CDN without integrity hashes. The CSP allows only that one CDN |
-| Cross-Domain JavaScript Source File Inclusion | Low | Accepted: same cause as above |
-| Modern Web Application | Informational | No change needed (ZAP's own advice) |
+| Sub Resource Integrity Attribute Missing | Medium | Swagger UI (on `/docs`) and Google Fonts load from outside servers without integrity hashes: FastAPI adds none, and Google Fonts changes its CSS per browser. The CSP allows only those servers |
+| Cross-Domain JavaScript Source File Inclusion | Low | Same cause, `/docs` only |
+| CSP: style-src unsafe-inline | Medium | Swagger UI needs inline styles, which can't run code. `/docs` only |
+| Modern Web Application | Info | ZAP says no change is needed |
 
 **Cost:**
-- If a FastAPI upgrade changes the docs page, the script hash must be updated or `/docs` loads blank
-- `pip-audit` and ZAP only find issues known when they run, so they must be repeated after any dependency change
+- The `/docs` CSP pins one script by its hash, so a FastAPI upgrade can break `/docs` until the hash is updated
+- The built front end must be rebuilt after every change
+- Audits and scans only find known issues, so they must be repeated after any dependency change
 
 #### Defence 2: Denial of service (Advanced)
 
-**Attack:**
-- **One expensive request:** FastAPI reads and parses the whole body before checking the 2,048-character limit, then echoes the input back in its `422` error. A 200 MB request is read, parsed and sent back in full, and every other user waits meanwhile.
-- **Many requests at once:** every prediction is accepted and queued in the same 40 worker threads that `/api/health` uses, so real users wait behind the attacker.
+***Attack:** One huge request (FastAPI read and parsed the whole body before checking the URL length, so a 200 MB request froze other users), or many requests at once (every prediction was queued, so real users waited behind the attacker).
 
 **Defence** (`backend/app/main.py`):
-- **Body size limit** (`limit_body_size` middleware): a request that declares more than 32 KB gets `413`, decided from its headers before any of the body is read. A `POST` that does not declare its size (a chunked upload) gets `411`. The largest valid request is about 24 KB, so no valid URL is refused.
-- **Prediction slots** (`take_prediction_slot` on `POST /api/predict`): at most 4 predictions run at once, and any extra request gets `503` with `Retry-After: 1` straight away instead of queueing. A slot is taken only after the body has arrived, so slow senders cannot hold one. `/api/health` and `/docs` do not use slots, so they stay responsive.
-- **Why 4:** a prediction takes a few milliseconds, and Python runs only one thread of Python code at a time, so more predictions side by side do not finish sooner.
-- **Already in the design:** `predict` is a plain `def`, so slow inference runs in a worker thread instead of blocking the server, and feature extraction uses no regular expressions that a crafted URL could make backtrack.
+- `limit_body_size`: bodies declared over 32 KB get `413` before any of the body is read, and `POST`s with no declared size get `411`. The largest valid request is about 24 KB
+- `take_prediction_slot`: at most 4 predictions run at once, and extra requests get `503` with `Retry-After: 1` instead of queueing. `/api/health` and `/docs` don't need a slot
 
-**Results** ("before" is git tag `before-dos`; during each test a real user checks `/api/health` 10 times a second):
+**Results**:
 
-| Test 1: one 200 MB request | Before | After |
+| | Before | After |
 |---|---|---|
-| Response | `422` after 1.12 s, with all 200 MB sent back | `413` after 0.003 s |
-| Real user, slowest answer | 0.94 s | 0.05 s |
-
-| Test 2: 100 users nonstop for 15 s | Before | After |
-|---|---|---|
-| Served (`200`) / refused (`503`) | 380 / 0 | 251 / 30,133 |
-| Average response time | 4.2 s | 0.05 s |
-| Real user, answers in 20 s | 52 | 200 |
-| Real user, slowest answer | 3.71 s | 0.08 s |
-
-**Variations** (with the defence):
-- Large body with no declared size: `411`, and none of the body is sent
-- Large body that declares a small size: only the declared bytes are read, then the connection is closed
-- Large body sent without waiting for the server's go-ahead: `413`, and the connection is closed after a few MB
+| One 200 MB request | `422` after 1.12 s, all 200 MB sent back | `413` after 0.003 s |
+| Real user's slowest answer during it | 0.94 s | 0.05 s |
+| 100 users for 15 s: served / refused | 380 / 0, 4.2 s each | 251 / 30,133, 0.05 s each |
+| Real user's slowest answer during it | 3.71 s | 0.08 s |
 
 **Cost:**
-- During a flood, some real users also get `503` and must retry. One attacker sending flat out can still crowd others out; a per-client rate limit or a CDN in front of the server would fix that.
-- Turning requests away still uses CPU. With instant `503`s the attacker sent 80 times more requests, so fewer predictions completed (251 vs 380).
-- Uploads without a declared size are refused, though browsers always declare it.
+- During a flood some real users get `503` and must retry. One attacker can still crowd others out
+- Turning requests away uses CPU, so fewer predictions completed during the flood (251 vs 380)
 
 ### Advanced security (section 2.8)
-<!-- Brief, 2.8: "Choose one, name it in your README, and do it properly. Only one is marked." -->
-TODO
+**Chosen attack: Detection evasion (Machine learning)**
+
+**Attack:** A phisher swaps a letter in the words our model looks for for a Cyrillic look-alike. The word no longer matches, so the URL looks safer to the model but identical to a person. `backend/scripts/evasion/evasion_test.py` attacks our own API with 100 phishing URLs the model only just catches (trust 40 to 50%), trying every combination of words to disguise and keeping the version the model trusts most.
+
+**Defence:** `normalise_url` in `backend/app/ml/data_processing.py` runs before the features are extracted. It turns full-width and maths letters into plain ones, removes accents and invisible characters, and swaps Cyrillic, Greek and other look-alikes for Latin letters.
+
+**Results** (`docs/evasion-before.txt`, `docs/evasion-after.txt`):
+
+| | Before | After |
+|---|---|---|
+| Look-alikes that got past | 47 of 100 | 0 of 100 |
+
+Without the defence, the disguise worked on about half the URLs. With it, every look-alike scores exactly like its original, and Greek, full-width and zero-width-space disguises are caught too.
+
+**Cost:**
+- The table only covers the look-alikes we listed
+- The model was trained without this step, so 0.01% of real URLs in our data get slightly different features
+- Look-alikes alone don't lower the score
 
 ## References
 <!-- Brief, 3 Deliverables: "references in Harvard style" -->
