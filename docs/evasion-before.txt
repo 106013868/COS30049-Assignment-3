@@ -1,0 +1,229 @@
+
+PhishLens detection evasion test (before)
+Each URL goes to POST /api/predict, the same call the app makes.
+Look-alike letters are shown in yellow.
+
+[  1/100] http://www.prudy.by/updatе/webscr.php?cmd=_lоgin-run&dispatch=5885d80a13c0db1f1ff80d546411...
+          original LIKELY PHISHING (trust  49%)   look-alike LIKELY SAFE     (trust  67%)   GOT PAST
+[  2/100] http://www.ecancerstaging.com/images/RBMC8Qg1BHav4pYFzembFoENcG1gf3H4PaiYU4haol/cmThkRqcUe...
+          original LIKELY PHISHING (trust  46%)   look-alike LIKELY PHISHING (trust  38%)   still caught
+[  3/100] http://plutaspj.pl/abzi/step1.php?National-Australia-Bаnk6868Accоunt-Verificatiоn-Process9...
+          original LIKELY PHISHING (trust  47%)   look-alike LIKELY SAFE     (trust  76%)   GOT PAST
+[  4/100] http://www.rickrecht.com/_email/accоunt7/security/
+          original LIKELY PHISHING (trust  47%)   look-alike LIKELY SAFE     (trust  63%)   GOT PAST
+[  5/100] http://joopbv.updatеmyprofile.com/j-l-2AD73FFF-l-b
+          original LIKELY PHISHING (trust  48%)   look-alike LIKELY SAFE     (trust  65%)   GOT PAST
+[  6/100] http://birdcagesforsaleshop.com/home/3522612321s649ze54trd3198a3w1tg6z3u1468732164/id/8809...
+          original LIKELY PHISHING (trust  48%)   look-alike LIKELY SAFE     (trust  71%)   GOT PAST
+[  7/100] http://thfoxblog.com/wp-content/plugins/dps/lоgin.htm
+          original LIKELY PHISHING (trust  49%)   look-alike LIKELY SAFE     (trust  57%)   GOT PAST
+[  8/100] http://us.battle.net.en.wwweb.asia/lоgin/en/lоgin.html
+          original LIKELY PHISHING (trust  46%)   look-alike LIKELY PHISHING (trust  39%)   still caught
+[  9/100] http://can-ami.com/i/paypol-renew.com.lоgin.54s5d48960qq14a2a1s0d5d8a12s0d5a8g6h0/
+          original LIKELY PHISHING (trust  41%)   look-alike LIKELY PHISHING (trust  43%)   still caught
+[ 10/100] http://www.lambat.web.id/wp-content/themes/twentyeleven/updatе/updatе/sеcure/672bfcaa73dbf...
+          original LIKELY PHISHING (trust  42%)   look-alike LIKELY SAFE     (trust  61%)   GOT PAST
+[ 11/100] http://vinoscalyptra.cl/paypal/paypal/updatе/com/83ab3de084d3d1666efac24e2fb59203/wbsccr.p...
+          original LIKELY PHISHING (trust  43%)   look-alike LIKELY PHISHING (trust  45%)   still caught
+[ 12/100] http://www.scadanet.co.uk/ii/properties/remax-worldwide/securelоgin/index.html
+          original LIKELY PHISHING (trust  40%)   look-alike LIKELY PHISHING (trust  42%)   still caught
+[ 13/100] http://vinoscalyptra.cl/paypal/paypal/updatе/com/3fd1dbc11c486f1634773d3f5ddef41f/wbsccr.p...
+          original LIKELY PHISHING (trust  50%)   look-alike LIKELY SAFE     (trust  56%)   GOT PAST
+[ 14/100] http://us.battle.net.lоgin.en.ppweb.asia/lоgin/en/lоgin.html?app=bam&amp;eor=0&amp;ref=www...
+          original LIKELY PHISHING (trust  44%)   look-alike LIKELY SAFE     (trust  57%)   GOT PAST
+[ 15/100] http://ebayclone.com/images/aa/original/lоgin.php
+          original LIKELY PHISHING (trust  45%)   look-alike LIKELY SAFE     (trust  51%)   GOT PAST
+[ 16/100] http://txellwebs.com/blog/wp-content/scap/6f113efe048fed952e74c98e9c52e7dd/webscr.html?cmd...
+          original LIKELY PHISHING (trust  43%)   look-alike LIKELY SAFE     (trust  52%)   GOT PAST
+[ 17/100] http://structuresnw.com/templates/atomic/Hao/lоgin_vеrify2.php
+          original LIKELY PHISHING (trust  45%)   look-alike LIKELY PHISHING (trust  47%)   still caught
+[ 18/100] http://www.auboisementcorrect.com/PP/webscr.php?cmd=_lоgin-run&dispatch=5885d80a13c0db1f1f...
+          original LIKELY PHISHING (trust  44%)   look-alike LIKELY PHISHING (trust  36%)   still caught
+[ 19/100] http://vinoscalyptra.cl/paypal/paypal/updatе/com/3fd1dbc11c486f1634773d3f5ddef41f/wbsccr.p...
+          original LIKELY PHISHING (trust  43%)   look-alike LIKELY PHISHING (trust  45%)   still caught
+[ 20/100] http://www.mycpdcredits.co.za/aol/lоgin.jsp.htm
+          original LIKELY PHISHING (trust  43%)   look-alike LIKELY PHISHING (trust  38%)   still caught
+[ 21/100] http://plasticmonkey.com/wp-content/languages/lоgin.attadmin/at.html
+          original LIKELY PHISHING (trust  45%)   look-alike LIKELY PHISHING (trust  38%)   still caught
+[ 22/100] http://www.australianwebservices.com/attachments/paypal.com/webscr.php?cmd=_lоgin-run&disp...
+          original LIKELY PHISHING (trust  46%)   look-alike LIKELY PHISHING (trust  26%)   still caught
+[ 23/100] http://www.viverelagheula.net/wp-content/plugins/akismet/paypal.com.au/initthi.html?UsingS...
+          original LIKELY PHISHING (trust  43%)   look-alike LIKELY PHISHING (trust  12%)   still caught
+[ 24/100] http://us.battle.net.lоgin.en.iiweb.asia/lоgin/en/lоgin.html?app=wam&amp;ref=www.battle.ne...
+          original LIKELY PHISHING (trust  44%)   look-alike LIKELY SAFE     (trust  57%)   GOT PAST
+[ 25/100] http://www.ankarahalitemizleme.com//wp-admin/user/IBlоgin.htm
+          original LIKELY PHISHING (trust  44%)   look-alike LIKELY SAFE     (trust  51%)   GOT PAST
+[ 26/100] http://us.battle.net.en.eeweb.asia/lоgin/en/lоgin.html?app=wam
+          original LIKELY PHISHING (trust  48%)   look-alike LIKELY PHISHING (trust  41%)   still caught
+[ 27/100] http://vinoscalyptra.cl/paypal/paypal/updatе/com/d7fd5d9f0ad28eb9c961b287f43c9377/wbsccr.p...
+          original LIKELY PHISHING (trust  45%)   look-alike LIKELY PHISHING (trust  47%)   still caught
+[ 28/100] http://ssl.allegro.pl.cgs7.com/fnd/authentication/response_typeclient_id_tb5SFf3cRxEyspDN/...
+          original LIKELY PHISHING (trust  43%)   look-alike LIKELY PHISHING (trust  39%)   still caught
+[ 29/100] http://www.zumbakuba.com/wp-vod/vodasecurity_accоunt_updatе.html
+          original LIKELY PHISHING (trust  48%)   look-alike LIKELY SAFE     (trust  57%)   GOT PAST
+[ 30/100] http://us.battle.net.en.wwweb.asia/lоgin/en/lоgin.html?app=wam&amp;ref=www.battle.net/acco...
+          original LIKELY PHISHING (trust  45%)   look-alike LIKELY SAFE     (trust  58%)   GOT PAST
+[ 31/100] http://www.viverelagheula.net/wp-content/plugins/akismet/paypal.com.au/initthi.html?bshowg...
+          original LIKELY PHISHING (trust  43%)   look-alike LIKELY PHISHING (trust  12%)   still caught
+[ 32/100] http://dlaemeryta.pl/templates/business3/images/copyrights/tango/remaxsеcurelоgin/
+          original LIKELY PHISHING (trust  45%)   look-alike LIKELY SAFE     (trust  61%)   GOT PAST
+[ 33/100] http://www.bccplanning.com/css/.css/lоgin_part.php
+          original LIKELY PHISHING (trust  42%)   look-alike LIKELY PHISHING (trust  36%)   still caught
+[ 34/100] http://chezlesdudu.com/includes/HNB/SLоgin.htm
+          original LIKELY PHISHING (trust  43%)   look-alike LIKELY PHISHING (trust  50%)   still caught
+[ 35/100] http://us.battle.net.ok.ttweb.asia/lоgin/en/lоgin.html
+          original LIKELY PHISHING (trust  46%)   look-alike LIKELY PHISHING (trust  39%)   still caught
+[ 36/100] http://txellwebs.com/blog/wp-content/scap/38b22c84ca53664c986e4c83f09a8dc7/webscr.html?cmd...
+          original LIKELY PHISHING (trust  43%)   look-alike LIKELY SAFE     (trust  52%)   GOT PAST
+[ 37/100] http://www.doneusebio.com/intl/update/webscr2.php?cmd=_lоgin-run&amp;dispatch=5885d80a13c0...
+          original LIKELY PHISHING (trust  50%)   look-alike LIKELY SAFE     (trust  57%)   GOT PAST
+[ 38/100] http://adailtopereira.com//base1/updatеsql.php
+          original LIKELY PHISHING (trust  41%)   look-alike LIKELY PHISHING (trust  46%)   still caught
+[ 39/100] http://www.viverelagheula.net/wp-content/plugins/akismet/paypal.com.au/initthi.html?bshowg...
+          original LIKELY PHISHING (trust  45%)   look-alike LIKELY PHISHING (trust  13%)   still caught
+[ 40/100] http://dotstersupporteam.com/webscr/?cmd=_lоgin-submit&dispatch=5885d80a13c0db1f8e263663d3...
+          original LIKELY PHISHING (trust  43%)   look-alike LIKELY PHISHING (trust  47%)   still caught
+[ 41/100] http://mahirulz.brinkster.net/Servicelоgin.aspx
+          original LIKELY PHISHING (trust  49%)   look-alike LIKELY PHISHING (trust  48%)   still caught
+[ 42/100] http://vinoscalyptra.cl/paypal/paypal/updatе/com/03051a45223cd3e6fdde41b995452dea/wbsccr.p...
+          original LIKELY PHISHING (trust  48%)   look-alike LIKELY SAFE     (trust  60%)   GOT PAST
+[ 43/100] http://www.zghfwz.com/js/?runescape.com/m=weblоgin/lоginform.html
+          original LIKELY PHISHING (trust  45%)   look-alike LIKELY PHISHING (trust  44%)   still caught
+[ 44/100] http://www.tobiasluttmer.com//wp-content/themes/simplex/aol.com/updatе.htm
+          original LIKELY PHISHING (trust  45%)   look-alike LIKELY PHISHING (trust  36%)   still caught
+[ 45/100] http://dixpected.net/wp-content/themes/Webly/ingbelLоgin.htm
+          original LIKELY PHISHING (trust  49%)   look-alike LIKELY SAFE     (trust  57%)   GOT PAST
+[ 46/100] http://www.piecesautotuning.com/boutique/images/QAA/lоgin.jsp.htm
+          original LIKELY PHISHING (trust  42%)   look-alike LIKELY PHISHING (trust  37%)   still caught
+[ 47/100] http://us.battle.net.ok.llweb.asia/lоgin/en/lоgin.html
+          original LIKELY PHISHING (trust  46%)   look-alike LIKELY PHISHING (trust  39%)   still caught
+[ 48/100] http://structuresnw.com/templates/atomic/TT/lоgin_vеrify2.php
+          original LIKELY PHISHING (trust  43%)   look-alike LIKELY PHISHING (trust  46%)   still caught
+[ 49/100] http://txellwebs.com/blog/wp-content/scap/bf7fd005d8cc6f7a3364cfb9601fa3d9/webscr.html?cmd...
+          original LIKELY PHISHING (trust  43%)   look-alike LIKELY SAFE     (trust  52%)   GOT PAST
+[ 50/100] http://txellwebs.com/blog/wp-content/scap/bf7fd005d8cc6f7a3364cfb9601fa3d9/webscr.html?dis...
+          original LIKELY PHISHING (trust  43%)   look-alike LIKELY SAFE     (trust  52%)   GOT PAST
+[ 51/100] http://www.lambat.web.id/wp-content/themes/twentyeleven/updatе/updatе/sеcure/672bfcaa73dbf...
+          original LIKELY PHISHING (trust  46%)   look-alike LIKELY SAFE     (trust  57%)   GOT PAST
+[ 52/100] http://cahev.com/old_aol.1.2/?Lоgin=&amp;Lis=10&amp;LigertID=1993745&amp;us=1
+          original LIKELY PHISHING (trust  48%)   look-alike LIKELY PHISHING (trust  26%)   still caught
+[ 53/100] http://us.battle.net.ok.qqweb.asia/lоgin/en/lоgin.html?app=bam&amp;eor=0&amp;ref=www.battl...
+          original LIKELY PHISHING (trust  45%)   look-alike LIKELY SAFE     (trust  58%)   GOT PAST
+[ 54/100] http://bаnkofamerica-notice4901231.com/signon.php
+          original LIKELY PHISHING (trust  40%)   look-alike LIKELY SAFE     (trust  59%)   GOT PAST
+[ 55/100] http://wattao.net/includes/PEAR/AOL_Lоgin.htm
+          original LIKELY PHISHING (trust  47%)   look-alike LIKELY SAFE     (trust  53%)   GOT PAST
+[ 56/100] http://mobilemoneyavalanche.com/administrator/index/wellsfargo.com/wellsfargo/lоgin.php?id
+          original LIKELY PHISHING (trust  47%)   look-alike LIKELY PHISHING (trust  39%)   still caught
+[ 57/100] http://www.rickrecht.com/_email/accоunt35/security/lоgin.php
+          original LIKELY PHISHING (trust  41%)   look-alike LIKELY PHISHING (trust  43%)   still caught
+[ 58/100] http://paypal.com-ma-cgi-bin-webscr-cmd-lоgin-submit-dispatchh-security.reddevs.com/update...
+          original LIKELY PHISHING (trust  45%)   look-alike LIKELY SAFE     (trust  54%)   GOT PAST
+[ 59/100] http://bulaq.az/images/AolServiceUpgrade/aolupdatе.htm
+          original LIKELY PHISHING (trust  48%)   look-alike LIKELY SAFE     (trust  53%)   GOT PAST
+[ 60/100] http://txellwebs.com/blog/wp-content/scap/908f8625ab88db835ac9bb739a31e143/webscr.html?cmd...
+          original LIKELY PHISHING (trust  43%)   look-alike LIKELY SAFE     (trust  52%)   GOT PAST
+[ 61/100] http://www.ankarahalitemizleme.com/home/home.asp/personal/logon/lоgin.jsp.htm/
+          original LIKELY PHISHING (trust  45%)   look-alike LIKELY PHISHING (trust  40%)   still caught
+[ 62/100] http://calre.net.cn/jsc/lоgin.htm?runescape.com/m=weblоgin/lоginform.html
+          original LIKELY PHISHING (trust  46%)   look-alike LIKELY PHISHING (trust  41%)   still caught
+[ 63/100] http://galdemchoice.com/css/secure.visa.dk/update-verified-by-visa/up.html?cmd=SіgnIn&amp;...
+          original LIKELY PHISHING (trust  50%)   look-alike LIKELY SAFE     (trust  57%)   GOT PAST
+[ 64/100] http://decorarte.mx/net/config/lоgin.mail.yahoo.com/
+          original LIKELY PHISHING (trust  46%)   look-alike LIKELY PHISHING (trust  44%)   still caught
+[ 65/100] http://us.battle.net.ok.wwweb.asia/lоgin/en/lоgin.html?app=wam&amp;ref=www.battle.net/acco...
+          original LIKELY PHISHING (trust  45%)   look-alike LIKELY SAFE     (trust  58%)   GOT PAST
+[ 66/100] http://www.revitolcream.org/wp-content/plugins/all-in-one-seo-pack/rex/sеcure-code5/securi...
+          original LIKELY PHISHING (trust  47%)   look-alike LIKELY SAFE     (trust  50%)   GOT PAST
+[ 67/100] http://jjelliot.com/verificatiоn/78e3f2e94ab136dad6e9878a1fe0b075/
+          original LIKELY PHISHING (trust  42%)   look-alike LIKELY PHISHING (trust  47%)   still caught
+[ 68/100] http://us.battle.net.ok.ttweb.asia/lоgin/en/index.htm
+          original LIKELY PHISHING (trust  46%)   look-alike LIKELY PHISHING (trust  36%)   still caught
+[ 69/100] http://icontactworld.net/im/english/updatе/dir.php
+          original LIKELY PHISHING (trust  47%)   look-alike LIKELY SAFE     (trust  54%)   GOT PAST
+[ 70/100] http://occidentaldecauchos.com/.tbt/updatе/updatе.php
+          original LIKELY PHISHING (trust  46%)   look-alike LIKELY PHISHING (trust  40%)   still caught
+[ 71/100] http://kontact.com.au/sеcure/www.paypal.com/uk/index.php
+          original LIKELY PHISHING (trust  46%)   look-alike LIKELY PHISHING (trust  42%)   still caught
+[ 72/100] http://txellwebs.com/blog/wp-content/scap/38b22c84ca53664c986e4c83f09a8dc7/webscr.html?dis...
+          original LIKELY PHISHING (trust  43%)   look-alike LIKELY SAFE     (trust  52%)   GOT PAST
+[ 73/100] http://us.battle.net.ok.ttweb.asia/lоgin/en/lоgin.html?app=wam
+          original LIKELY PHISHING (trust  48%)   look-alike LIKELY PHISHING (trust  41%)   still caught
+[ 74/100] http://txellwebs.com/blog/wp-content/scap/b035e3f48579da15de7dc280bde9d8f2/webscr.html?cmd...
+          original LIKELY PHISHING (trust  43%)   look-alike LIKELY SAFE     (trust  52%)   GOT PAST
+[ 75/100] http://teacherstock.co.uk/RBMC8Qg1BHav4pYFzembFoENcG1gf3H4PaiYU4haol/cmThkRqcUe5qBbIUMLTMU...
+          original LIKELY PHISHING (trust  43%)   look-alike LIKELY PHISHING (trust  38%)   still caught
+[ 76/100] http://us.battle.net.en.ddweb.asia/lоgin/en/lоgin.html?app=wam&amp;ref=www.battle.net/acco...
+          original LIKELY PHISHING (trust  45%)   look-alike LIKELY SAFE     (trust  58%)   GOT PAST
+[ 77/100] http://www.woolwichf.com/website/internetbаnking/online.html
+          original LIKELY PHISHING (trust  46%)   look-alike LIKELY SAFE     (trust  52%)   GOT PAST
+[ 78/100] http://dezmembrariauto1.ro/images/new.alibaba1/acco.unt.vеrify.php
+          original LIKELY PHISHING (trust  47%)   look-alike LIKELY PHISHING (trust  48%)   still caught
+[ 79/100] http://madisonbass.com/www.paypal.com/au/lan-en/lоgin/cmd=_account/
+          original LIKELY PHISHING (trust  43%)   look-alike LIKELY PHISHING (trust  44%)   still caught
+[ 80/100] http://terraceatwoodland.com/wp-admin/includes/yahoo/Yahoo!/config/lоgin.html
+          original LIKELY PHISHING (trust  50%)   look-alike LIKELY SAFE     (trust  56%)   GOT PAST
+[ 81/100] http://darelkamarcatering.com/resolution/?cmd=_lоgin-run
+          original LIKELY PHISHING (trust  47%)   look-alike LIKELY SAFE     (trust  70%)   GOT PAST
+[ 82/100] http://supernova.3owl.com/lоgin_verify2.htm
+          original LIKELY PHISHING (trust  43%)   look-alike LIKELY PHISHING (trust  41%)   still caught
+[ 83/100] http://xq.exxedu.cn/js/?us.battle.net/lоgin/en/?ref=http://us.battle.net/d3/en/index&amp;a...
+          original LIKELY PHISHING (trust  42%)   look-alike LIKELY PHISHING (trust  37%)   still caught
+[ 84/100] http://txellwebs.com/blog/wp-content/scap/908f8625ab88db835ac9bb739a31e143/webscr.html?cmd...
+          original LIKELY PHISHING (trust  43%)   look-alike LIKELY SAFE     (trust  52%)   GOT PAST
+[ 85/100] http://stickam.com.lоgin.do.googlepages.com/lоgin.html
+          original LIKELY PHISHING (trust  42%)   look-alike LIKELY PHISHING (trust  33%)   still caught
+[ 86/100] http://txellwebs.com/blog/wp-content/scap/501e5fc179aaef36755fa66cf68d34bf/webscr.html?cmd...
+          original LIKELY PHISHING (trust  43%)   look-alike LIKELY SAFE     (trust  52%)   GOT PAST
+[ 87/100] http://www.rickrecht.com/_email/accоunt23/security/
+          original LIKELY PHISHING (trust  47%)   look-alike LIKELY SAFE     (trust  63%)   GOT PAST
+[ 88/100] http://ernestoluna.com/wp-content/upgrade/update.reflect.html/sеcure_sеcure.html/
+          original LIKELY PHISHING (trust  47%)   look-alike LIKELY PHISHING (trust  48%)   still caught
+[ 89/100] http://sexyteensinpanties.com/paypal.com-us.cgi-bin-webscr-cmd.lоgin-submit-dispatch.74fgh...
+          original LIKELY PHISHING (trust  47%)   look-alike LIKELY PHISHING (trust  45%)   still caught
+[ 90/100] http://paypalsеcure.net/~saasdde/konfliktloesung/
+          original LIKELY PHISHING (trust  48%)   look-alike LIKELY SAFE     (trust  68%)   GOT PAST
+[ 91/100] http://digilander.libero.it/Totorza/lоgin.srf.htm
+          original LIKELY PHISHING (trust  41%)   look-alike LIKELY PHISHING (trust  34%)   still caught
+[ 92/100] http://www.kasssb-nv.net/sal/verificatiоn/index.php
+          original LIKELY PHISHING (trust  43%)   look-alike LIKELY PHISHING (trust  49%)   still caught
+[ 93/100] http://us.battle.net.ok.qe-rs.com/lоgin/en/lоgin.html?amp
+          original LIKELY PHISHING (trust  48%)   look-alike LIKELY PHISHING (trust  41%)   still caught
+[ 94/100] http://txellwebs.com/blog/wp-content/scap/908f8625ab88db835ac9bb739a31e143/webscr.html?dis...
+          original LIKELY PHISHING (trust  43%)   look-alike LIKELY SAFE     (trust  52%)   GOT PAST
+[ 95/100] http://question-homeaway.com/lоgin/auth/homeaway/lоgin/service/confirm/lоgin.php
+          original LIKELY PHISHING (trust  48%)   look-alike LIKELY SAFE     (trust  54%)   GOT PAST
+[ 96/100] http://metereal.10001mb.com/ttf/Lоgin.htm
+          original LIKELY PHISHING (trust  48%)   look-alike LIKELY PHISHING (trust  47%)   still caught
+[ 97/100] http://www.revitolcream.org/wp-content/plugins/all-in-one-seo-pack/rex/sеcure-code0/securi...
+          original LIKELY PHISHING (trust  47%)   look-alike LIKELY SAFE     (trust  50%)   GOT PAST
+[ 98/100] http://jmsswc.com/ppl/Restore_your_accоunt.html
+          original LIKELY PHISHING (trust  47%)   look-alike LIKELY SAFE     (trust  53%)   GOT PAST
+[ 99/100] http://www.xardin.net/scripts/fsbb/aoll/lоgin.psp.htm
+          original LIKELY PHISHING (trust  47%)   look-alike LIKELY PHISHING (trust  40%)   still caught
+[100/100] http://www.rabbitfoodrocks.com/wp-includes/pomo/lоgin.jsp.htm
+          original LIKELY PHISHING (trust  44%)   look-alike LIKELY PHISHING (trust  40%)   still caught
+
+Summary (before)
+                              Original  Look-alike
+Caught as phishing                 100          53
+Keywords the model saw            1.30        0.17
+Average trust score                45%         48%
+
+Got past the model: 47 of 100 (47%), 95% confidence interval 38% to 57%
+API requests sent: 268
+
+Trust score bands (the app says LIKELY SAFE above about 50%):
+     trust  original  look-alike
+   0-9   %        0           0
+  10-19  %        0           3
+  20-29  %        0           2
+  30-39  %        0          17
+  40-49  %       96          30
+  50-59  %        4          37
+  60-69  %        0           8
+  70-79  %        0           3
+  80-89  %        0           0
+  90-100 %        0           0
+
+Every URL's result saved to evasion_results_before.csv
