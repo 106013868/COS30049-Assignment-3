@@ -6,7 +6,7 @@ Web application that checks whether a URL is phishing or legitimate, using a mac
 - **Frontend**: React 19.3.1 with Vite 8.3.6, React Router 8.5.1 and Recharts 3.10.1
 - **ML Model**: HistGradientBoosting classifier (Pedregosa et al. 2011) (from Assignment 2)
 
-**Group:**
+**Group:** Session 21 Group 2
 
 | Name | Student ID | Role |
 |---|---|---|
@@ -41,7 +41,7 @@ Backend runs on `http://127.0.0.1:8000`
 
 ### Frontend Setup / running
 In a second terminal, from the project root:
-```
+```bash
 cd frontend
 npm ci
 copy .env.example .env             # macOS: cp .env.example .env
