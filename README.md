@@ -4,7 +4,7 @@ Web application that checks whether a URL is phishing or legitimate, using a mac
 
 - **Backend**: FastAPI 0.162.0, scikit-learn 1.9.1, Python 3.13
 - **Frontend**: React 19.3.1 with Vite 8.3.6, React Router 8.5.1 and Recharts 3.10.1
-- **ML Model**: HistGradientBoosting classifier (from Assignment 2)
+- **ML Model**: HistGradientBoosting classifier (Pedregosa et al. 2011) (from Assignment 2)
 
 **Group:**
 
@@ -198,7 +198,7 @@ COS30049-Assignment-3/
 | Missing rate limiting | Yes | FastAPI sets no limit; anyone can send unlimited requests |
 | SQL injection | No | No database |
 | Unsafe file upload | No | No file uploads |
-| Misconfiguration and vulnerable dependencies | Yes | Applies to every application |
+| Misconfiguration and vulnerable dependencies | Yes | Applies to every application (OWASP Foundation 2025) |
 | Denial of service | Yes | Running the model costs more than sending a request |
 | Server-side request forgery (SSRF) | No | The back end never visits or looks up the submitted URL |
 | Broken access control | No | No user accounts |
@@ -230,8 +230,8 @@ CORS only stops other websites from calling the API through a visitor's browser.
 
 | Check | Before | After |
 |---|---|---|
-| ZAP, API and `/docs` | 6 alerts | 4, all accepted and justified below |
-| ZAP, front end | 9 alerts | 2, both accepted and justified below |
+| ZAP (ZAP n.d.), API and `/docs` | 6 alerts | 4, all accepted and justified below |
+| ZAP (ZAP n.d.), front end | 9 alerts | 2, both accepted and justified below |
 
 Fixed: the missing Content Security Policy, anti-clickjacking and nosniff headers on both, the API's missing `form-action` rule, and the front end's Path Traversal.
 
@@ -271,9 +271,9 @@ Fixed: the missing Content Security Policy, anti-clickjacking and nosniff header
 ### Advanced security (section 2.8)
 **Chosen attack: Detection evasion (Machine learning)**
 
-**Attack:** A phisher swaps a letter in the words our model looks for a Cyrillic look-alike. The word no longer matches, so the URL looks safer to the model but identical to a person. `backend/scripts/evasion/evasion_test.py` attacks our own API with 100 phishing URLs the model only just catches (trust 40 to 50%), trying every combination of words to disguise and keeping the version the model trusts most.
+**Attack:** A phisher swaps a letter in the words our model looks for with a Cyrillic look-alike. The word no longer matches, so the URL looks safer to the model but identical to a person. `backend/scripts/evasion/evasion_test.py` attacks our own API with 100 phishing URLs the model only just catches (trust 40 to 50%), trying every combination of words to disguise and keeping the version the model trusts most.
 
-**Defence:** `normalise_url` in `backend/app/ml/data_processing.py` runs before the features are extracted. It turns full-width and maths letters into plain ones, removes accents and invisible characters, and swaps Cyrillic, Greek and other look-alikes for Latin letters.
+**Defence:** `normalise_url` in `backend/app/ml/data_processing.py` runs before the features are extracted. It turns full-width and maths letters into plain ones, removes accents and invisible characters, and swaps Cyrillic, Greek and other look-alikes for Latin letters (Whistler 2024).
 
 **Results** (`docs/evasion-before.txt`, `docs/evasion-after.txt`):
 
@@ -284,7 +284,7 @@ Fixed: the missing Content Security Policy, anti-clickjacking and nosniff header
 Without the defence, the disguise worked on about half the URLs. With it, every look-alike scores exactly like its original, and Greek, full-width and zero-width-space disguises are caught too.
 
 **Cost:**
-- The table only covers the look-alikes we listed
+- The table only covers the look-alikes we listed; Unicode's full confusables list (Davis and Suignard 2025) would cover the rest
 - The model was trained without this step, so 0.01% of real URLs in our data get slightly different features
 - Look-alikes alone don't lower the score
 
