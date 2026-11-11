@@ -6,7 +6,7 @@ Web application that checks whether a URL is phishing or legitimate, using a mac
 - **Frontend**: React 19.3.1 with Vite 8.3.6, React Router 8.5.1 and Recharts 3.10.1
 - **ML Model**: HistGradientBoosting classifier (from Assignment 2)
 
-**Group:** TODO: group name
+**Group:**
 
 | Name | Student ID | Role |
 |---|---|---|
@@ -15,8 +15,6 @@ Web application that checks whether a URL is phishing or legitimate, using a mac
 | Anthony Duero | 104561608 | Video |
 
 ## Quick Start
-
-<!-- Rubric, Source code 1) Runs from the README (2 pts): "Following the README alone on a clean machine starts both the front end and the back end, with no fixes needed. Dependency versions are pinned." -->
 
 ### Prerequisites
 - Python 3.13
@@ -57,7 +55,6 @@ Open http://localhost:5173. The back end must be running first.
 |---|---|---|---|
 | `VITE_API_BASE_URL` | `frontend/.env` | Address of the back end | `http://localhost:8000` |
 | `FRONTEND_ORIGIN` | `backend/.env` | The only origin allowed by CORS | `http://localhost:5173` |
-| `LOG_LEVEL` | `backend/.env` | TODO | `info` |
 
 ## Usage
 
@@ -112,7 +109,6 @@ Response (shortened):
 **GET /api/model-info**: the model version, its 9 features, and the average value of each feature for legitimate and phishing URLs in the training data. Used by the comparison chart. Returns `200`, or `503` if the reference data did not load.
 
 ### Error format
-<!-- Rubric, Back end 2) Error handling (2 pts): "Invalid input receives a clear message with the right status code. Every error, including unexpected ones such as a failing model call, is returned in the same JSON format, without stack traces or other internal details." -->
 Every error uses the same JSON shape: `{"error": {"code": "VALIDATION_ERROR", "message": "URL must not contain spaces."}}`. 
 Codes: `NOT_FOUND` (404), `METHOD_NOT_ALLOWED` (405), `LENGTH_REQUIRED` (411), `PAYLOAD_TOO_LARGE` (413), `VALIDATION_ERROR` (422), `INTERNAL_ERROR` (500), `SERVICE_UNAVAILABLE` (503). 
 Unexpected errors are logged on the server only; the client gets a generic message with no stack trace.
@@ -156,7 +152,6 @@ COS30049-Assignment-3/
 ```
 
 ## Architecture
-<!-- Brief, 3 Deliverables: "an architecture diagram" -->
   ```
    Browser (React, http://localhost:5173)
    ┌──────────────────────────────────────────────┐
@@ -184,7 +179,6 @@ COS30049-Assignment-3/
   ```
 
 ## Dependencies
-<!-- Brief, 2.4 Running the application: "Dependency versions are pinned, so the application runs the same way for the marker as it does for you" -->
 - **Backend:** `backend/requirements.txt`
 - **Frontend:** `frontend/package.json` (exact versions), locked in `frontend/package-lock.json`
 
@@ -215,7 +209,7 @@ COS30049-Assignment-3/
 | User input is never rendered as HTML | React escapes all text. The checked URL is shown as plain text only, never in `href`, `window.open` or `dangerouslySetInnerHTML` | `frontend/src/components/ResultCard.jsx` |
 | Size limits enforced on the back end | URL: 1 to 2,048 characters, checked by Pydantic (only 2 of 632,907 training URLs are longer). Request body: 32 KB, checked before it is read | `backend/app/schemas.py`, `backend/app/main.py` |
 | CORS allows only our front end | One exact origin from `FRONTEND_ORIGIN`; methods GET and POST and header `Content-Type` only; no credentials | `backend/app/main.py` |
-| Secrets kept out of source code | The app needs no secrets. Settings come from environment variables; `.env` is git-ignored and `.env.example` is the template. TODO: gitleaks result | `backend/app/config.py` |
+| Secrets kept out of source code | The app needs no secrets. Settings come from environment variables; `.env` is git-ignored and `.env.example` is the template. | `backend/app/config.py` |
 
 CORS only stops other websites from calling the API through a visitor's browser. It does not stop direct requests such as curl, so the defences below are enforced on the server.
 
@@ -277,7 +271,7 @@ Fixed: the missing Content Security Policy, anti-clickjacking and nosniff header
 ### Advanced security (section 2.8)
 **Chosen attack: Detection evasion (Machine learning)**
 
-**Attack:** A phisher swaps a letter in the words our model looks for for a Cyrillic look-alike. The word no longer matches, so the URL looks safer to the model but identical to a person. `backend/scripts/evasion/evasion_test.py` attacks our own API with 100 phishing URLs the model only just catches (trust 40 to 50%), trying every combination of words to disguise and keeping the version the model trusts most.
+**Attack:** A phisher swaps a letter in the words our model looks for a Cyrillic look-alike. The word no longer matches, so the URL looks safer to the model but identical to a person. `backend/scripts/evasion/evasion_test.py` attacks our own API with 100 phishing URLs the model only just catches (trust 40 to 50%), trying every combination of words to disguise and keeping the version the model trusts most.
 
 **Defence:** `normalise_url` in `backend/app/ml/data_processing.py` runs before the features are extracted. It turns full-width and maths letters into plain ones, removes accents and invisible characters, and swaps Cyrillic, Greek and other look-alikes for Latin letters.
 
@@ -295,5 +289,15 @@ Without the defence, the disguise worked on about half the URLs. With it, every 
 - Look-alikes alone don't lower the score
 
 ## References
-<!-- Brief, 3 Deliverables: "references in Harvard style" -->
-- TODO
+
+- Anthropic (2026). *Claude* [Large language model]. Available at: https://claude.ai [Accessed 11 Nov. 2026].
+- Davis, M. and Suignard, M. (2025). *Unicode Technical Standard #39: Unicode Security Mechanisms*, Revision 31. [online] Unicode Consortium. Available at: https://www.unicode.org/reports/tr39/tr39-31.html [Accessed 11 Nov. 2026].
+- OWASP Foundation (2025). *A02:2025 Security Misconfiguration*. [online] OWASP Top 10:2025. Available at: https://top10.owasp.org/2025/A02_2025-Security_Misconfiguration/ [Accessed 11 Nov. 2026].
+- Pedregosa, F. et al. (2011). Scikit-learn: Machine Learning in Python. *Journal of Machine Learning Research*, 12, pp. 2825–2830.
+- Siddhartha, M. (2021). *Malicious URLs dataset*. [online] www.kaggle.com. Available at: https://www.kaggle.com/datasets/sid321axn/malicious-urls-dataset [Accessed 7 Oct. 2026].
+- Whistler, K. (2024). *Unicode Standard Annex #15: Unicode Normalization Forms*, Revision 56. [online] Unicode Consortium. Available at: https://www.unicode.org/reports/tr15/tr15-56.html [Accessed 11 Nov. 2026].
+- www.kaggle.com (n.d.). *Phishing Site URLs*. [online] Available at: https://www.kaggle.com/datasets/taruntiwarihp/phishing-site-urls [Accessed 7 Oct. 2026].
+- ZAP (n.d.). *ZAP by Checkmarx*. [online] Available at: https://www.zaproxy.org/ [Accessed 11 Nov. 2026].
+
+### Use of generative AI
+We used Claude (Anthropic 2026) to help with planning the implementation and debugging of various parts of the project. The tool was used to help explore potential approaches, clarify technical concepts, and suggest solutions to challenges. The source code was written, reviewed and implemented by the team.
